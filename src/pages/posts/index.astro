@@ -1,0 +1,459 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const title = "文章";
+const description = "技术文章、教程与生活分享";
+
+// 获取所有文章
+const allPosts = await getCollection('posts');
+
+// 按日期排序
+const posts = allPosts.sort((a, b) => 
+	new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+
+const categories = ["全部", ...new Set(posts.map(post => post.data.category))];
+const allTags = [...new Set(posts.flatMap(post => post.data.tags))];
+
+// 格式化日期
+function formatDate(date: Date) {
+	return new Date(date).toISOString().split('T')[0];
+}
+---
+
+<Layout title={title} description={description}>
+	<div class="posts-page">
+		<!-- Hero Header -->
+		<div class="page-hero">
+			<div class="hero-container">
+				<h1 class="hero-title">文章</h1>
+				<p class="hero-desc">探索技术文章，分享学习心得</p>
+				<div class="posts-stats">
+					<div class="stat-item">
+						<span class="stat-value">{posts.length}</span>
+						<span class="stat-label">篇文章</span>
+					</div>
+					<div class="stat-divider"></div>
+					<div class="stat-item">
+						<span class="stat-value">{categories.length - 1}</span>
+						<span class="stat-label">个分类</span>
+					</div>
+					<div class="stat-divider"></div>
+					<div class="stat-item">
+						<span class="stat-value">{allTags.length}</span>
+						<span class="stat-label">个标签</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-container">
+			<!-- Sidebar Filters -->
+			<aside class="sidebar">
+				<div class="filter-section">
+					<h3 class="filter-title">
+						<svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M4 6h16M4 12h16M4 18h7"/>
+						</svg>
+						分类
+					</h3>
+					<div class="filter-list">
+						{categories.map((category) => (
+							<button class={`filter-btn ${category === '全部' ? 'active' : ''}`}>
+								{category}
+							</button>
+						))}
+					</div>
+				</div>
+
+				<div class="filter-section">
+					<h3 class="filter-title">
+						<svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+						</svg>
+						热门标签
+					</h3>
+					<div class="tag-cloud">
+						{allTags.slice(0, 8).map((tag) => (
+							<span class="tag-item">{tag}</span>
+						))}
+					</div>
+				</div>
+			</aside>
+
+			<!-- Posts List -->
+			<div class="posts-main">
+				<div class="posts-list">
+					{posts.map((post, index) => (
+						<article class="post-item">
+							<div class="post-meta-row">
+								<span class="post-category-badge">{post.data.category}</span>
+								<span class="post-dot"></span>
+								<time class="post-date">{formatDate(post.data.pubDate)}</time>
+								<span class="post-dot"></span>
+								<span class="post-readtime">{post.data.readTime}阅读</span>
+							</div>
+							<h2 class="post-title">
+								<a href={`/posts/${post.id}`}>
+									<span class="post-number">{String(index + 1).padStart(2, '0')}</span>
+									{post.data.title}
+								</a>
+							</h2>
+							<p class="post-excerpt">{post.data.description}</p>
+							<div class="post-footer">
+								<div class="post-tags">
+									{post.data.tags.slice(0, 3).map((tag: string) => (
+										<span class="post-tag">{tag}</span>
+									))}
+								</div>
+								<a href={`/posts/${post.id}`} class="read-more">
+									阅读文章
+									<svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<path d="M5 12h14M12 5l7 7-7 7"/>
+									</svg>
+								</a>
+							</div>
+						</article>
+					))}
+				</div>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.posts-page {
+		min-height: calc(100vh - var(--header-height));
+	}
+
+	/* Page Hero */
+	.page-hero {
+		background: linear-gradient(180deg, var(--vp-c-bg-alt) 0%, var(--vp-c-bg) 100%);
+		padding: 48px 24px 32px;
+		border-bottom: 1px solid var(--vp-c-divider);
+	}
+
+	.hero-container {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	.hero-title {
+		font-size: 2.5rem;
+		font-weight: 700;
+		color: var(--vp-c-text-1);
+		margin-bottom: 8px;
+		letter-spacing: -0.02em;
+	}
+
+	.hero-desc {
+		font-size: 1.125rem;
+		color: var(--vp-c-text-2);
+		margin-bottom: 24px;
+	}
+
+	.posts-stats {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.stat-item {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.stat-value {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--vp-c-brand-1);
+	}
+
+	.stat-label {
+		font-size: 0.875rem;
+		color: var(--vp-c-text-2);
+	}
+
+	.stat-divider {
+		width: 1px;
+		height: 16px;
+		background: var(--vp-c-divider);
+	}
+
+	/* Content Container */
+	.content-container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 32px 24px;
+		display: grid;
+		grid-template-columns: 240px 1fr;
+		gap: 48px;
+	}
+
+	/* Sidebar */
+	.sidebar {
+		position: sticky;
+		top: calc(var(--header-height) + 32px);
+		height: fit-content;
+	}
+
+	.filter-section {
+		margin-bottom: 32px;
+	}
+
+	.filter-title {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+		margin-bottom: 16px;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.filter-icon {
+		width: 16px;
+		height: 16px;
+		color: var(--vp-c-text-3);
+	}
+
+	.filter-list {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.filter-btn {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		padding: 8px 12px;
+		border: none;
+		background: transparent;
+		color: var(--vp-c-text-2);
+		font-size: 0.9375rem;
+		text-align: left;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.filter-btn:hover {
+		background: var(--vp-c-bg-soft);
+		color: var(--vp-c-text-1);
+	}
+
+	.filter-btn.active {
+		background: var(--vp-c-brand-soft);
+		color: var(--vp-c-brand-1);
+		font-weight: 500;
+	}
+
+	.tag-cloud {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.tag-item {
+		padding: 4px 10px;
+		background: var(--vp-c-bg-soft);
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 4px;
+		font-size: 0.8125rem;
+		color: var(--vp-c-text-2);
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.tag-item:hover {
+		border-color: var(--vp-c-brand-1);
+		color: var(--vp-c-brand-1);
+	}
+
+	/* Posts Main */
+	.posts-main {
+		min-width: 0;
+	}
+
+	.posts-list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.post-item {
+		padding: 32px 0;
+		border-bottom: 1px solid var(--vp-c-divider);
+	}
+
+	.post-item:first-child {
+		padding-top: 0;
+	}
+
+	.post-meta-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 12px;
+		font-size: 0.875rem;
+	}
+
+	.post-category-badge {
+		color: var(--vp-c-brand-1);
+		font-weight: 500;
+	}
+
+	.post-dot {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--vp-c-text-3);
+	}
+
+	.post-date,
+	.post-readtime {
+		color: var(--vp-c-text-3);
+	}
+
+	.post-title {
+		font-size: 1.375rem;
+		font-weight: 600;
+		line-height: 1.4;
+		margin-bottom: 12px;
+	}
+
+	.post-title a {
+		color: var(--vp-c-text-1);
+		text-decoration: none;
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		transition: color 0.2s;
+	}
+
+	.post-title a:hover {
+		color: var(--vp-c-brand-1);
+	}
+
+	.post-number {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--vp-c-text-3);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.post-title a:hover .post-number {
+		color: var(--vp-c-brand-1);
+	}
+
+	.post-excerpt {
+		font-size: 0.9375rem;
+		color: var(--vp-c-text-2);
+		line-height: 1.7;
+		margin-bottom: 16px;
+	}
+
+	.post-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.post-tags {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.post-tag {
+		padding: 3px 10px;
+		background: var(--vp-c-bg-soft);
+		border-radius: 4px;
+		font-size: 0.8125rem;
+		color: var(--vp-c-text-2);
+	}
+
+	.read-more {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		color: var(--vp-c-brand-1);
+		text-decoration: none;
+		font-size: 0.9375rem;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+
+	.read-more:hover {
+		color: var(--vp-c-brand-2);
+	}
+
+	.arrow-icon {
+		width: 16px;
+		height: 16px;
+		transition: transform 0.2s;
+	}
+
+	.read-more:hover .arrow-icon {
+		transform: translateX(4px);
+	}
+
+	/* Responsive */
+	@media (max-width: 1024px) {
+		.content-container {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+
+		.sidebar {
+			position: static;
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 24px;
+		}
+
+		.filter-section {
+			margin-bottom: 0;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.page-hero {
+			padding: 32px 16px 24px;
+		}
+
+		.hero-title {
+			font-size: 1.875rem;
+		}
+
+		.posts-stats {
+			flex-wrap: wrap;
+		}
+
+		.content-container {
+			padding: 24px 16px;
+		}
+
+		.sidebar {
+			grid-template-columns: 1fr;
+		}
+
+		.post-item {
+			padding: 24px 0;
+		}
+
+		.post-title {
+			font-size: 1.125rem;
+		}
+
+		.post-number {
+			display: none;
+		}
+	}
+</style>

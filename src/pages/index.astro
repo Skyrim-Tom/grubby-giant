@@ -1,11 +1,576 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.vue';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = "首页";
+const description = "欢迎来到我的博客，分享技术、摄影与生活";
+
+// 获取最新文章
+const allPosts = await getCollection('posts');
+const latestPosts = allPosts
+	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+	.slice(0, 3);
+
+const featuredPhotos = [
+	{ id: 1, title: "日落余晖", category: "风景" },
+	{ id: 2, title: "城市夜景", category: "城市" },
+	{ id: 3, title: "春日花开", category: "自然" },
+	{ id: 4, title: "街头人文", category: "人文" }
+];
 ---
 
-<Layout>
-	<Welcome />
+<Layout title={title} description={description}>
+	<div class="home">
+		<!-- Hero Section -->
+		<section class="hero">
+			<div class="hero-container">
+				<div class="hero-badge">
+					<span class="badge-icon">✦</span>
+					<span>记录技术与生活</span>
+				</div>
+				<h1 class="hero-title">
+					陶然无喜亦无忧🌕
+					<br />
+					<span class="gradient-text">人生且自由。</span>
+				</h1>
+				<p class="hero-desc">
+					练习时长 7 年半，分享一些前端开发经验、摄影作品以及生活感悟。
+				</p>
+				<div class="hero-actions">
+					<a href="/posts" class="btn btn-primary">
+						浏览文章
+						<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+					<a href="/gallery" class="btn btn-secondary">查看相册</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- Latest Posts Section -->
+		<section class="section">
+			<div class="section-container">
+				<div class="section-header">
+					<div class="section-title-wrapper">
+						<span class="section-icon">📝</span>
+						<h2 class="section-title">最新文章</h2>
+					</div>
+					<a href="/posts" class="section-link">
+						查看全部
+						<svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+				</div>
+				<div class="posts-grid">
+					{latestPosts.map((post) => (
+						<PostCard post={post} client:visible />
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- Gallery Preview Section -->
+		<section class="section section-alt">
+			<div class="section-container">
+				<div class="section-header">
+					<div class="section-title-wrapper">
+						<span class="section-icon">📷</span>
+						<h2 class="section-title">摄影作品</h2>
+					</div>
+					<a href="/gallery" class="section-link">
+						查看全部
+						<svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+				</div>
+				<div class="gallery-grid">
+					{featuredPhotos.map((photo, index) => (
+						<div class={`gallery-item ${index === 0 ? 'gallery-item-large' : ''}`}>
+							<div class="gallery-image">
+								<div class="image-placeholder">
+									<span class="placeholder-icon">◆</span>
+								</div>
+								<div class="gallery-overlay">
+									<span class="gallery-category">{photo.category}</span>
+								</div>
+							</div>
+							<h4 class="gallery-title">{photo.title}</h4>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- About CTA Section -->
+		<section class="section">
+			<div class="section-container">
+				<div class="cta-card">
+					<div class="cta-content">
+						<h2 class="cta-title">关于我</h2>
+						<p class="cta-desc">
+							热爱技术的开发者，喜欢用代码创造美好的事物。
+							同时也热爱摄影，用镜头记录生活中的精彩瞬间。
+						</p>
+						<a href="/about" class="btn btn-outline">
+							了解更多
+							<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M5 12h14M12 5l7 7-7 7"/>
+							</svg>
+						</a>
+					</div>
+					<div class="cta-decoration">
+						<div class="decoration-circle"></div>
+						<div class="decoration-circle decoration-circle-2"></div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
 </Layout>
+
+<style>
+	.home {
+		padding-bottom: 64px;
+	}
+
+	/* Hero Section */
+	.hero {
+		padding: 80px 24px 64px;
+		text-align: center;
+		background: linear-gradient(180deg, var(--vp-c-bg-alt) 0%, var(--vp-c-bg) 100%);
+	}
+
+	.hero-container {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.hero-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 16px;
+		background: var(--vp-c-brand-soft);
+		border-radius: 20px;
+		color: var(--vp-c-brand-1);
+		font-size: 0.875rem;
+		font-weight: 500;
+		margin-bottom: 24px;
+	}
+
+	.badge-icon {
+		font-size: 1rem;
+	}
+
+	.hero-title {
+		font-size: clamp(2rem, 5vw, 3.5rem);
+		font-weight: 700;
+		line-height: 1.2;
+		color: var(--vp-c-text-1);
+		margin-bottom: 24px;
+		letter-spacing: -0.02em;
+	}
+
+	.gradient-text {
+		background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-2) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.hero-desc {
+		font-size: 1.125rem;
+		color: var(--vp-c-text-2);
+		max-width: 600px;
+		margin: 0 auto 32px;
+		line-height: 1.7;
+	}
+
+	.hero-actions {
+		display: flex;
+		gap: 16px;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+
+	/* Buttons */
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 24px;
+		border-radius: 8px;
+		font-size: 0.9375rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: all 0.2s;
+		cursor: pointer;
+		border: none;
+	}
+
+	.btn-primary {
+		background: var(--vp-c-brand-1);
+		color: white;
+	}
+
+	.btn-primary:hover {
+		background: var(--vp-c-brand-2);
+		transform: translateY(-1px);
+		box-shadow: var(--vp-shadow-2);
+	}
+
+	.btn-secondary {
+		background: var(--vp-c-bg-soft);
+		color: var(--vp-c-text-1);
+	}
+
+	.btn-secondary:hover {
+		background: var(--vp-c-bg-elv);
+	}
+
+	.btn-outline {
+		background: transparent;
+		color: var(--vp-c-brand-1);
+		border: 1px solid var(--vp-c-brand-1);
+	}
+
+	.btn-outline:hover {
+		background: var(--vp-c-brand-soft);
+	}
+
+	.btn-icon,
+	.link-icon,
+	.link-arrow {
+		width: 16px;
+		height: 16px;
+		transition: transform 0.2s;
+	}
+
+	.btn:hover .btn-icon,
+	.section-link:hover .link-icon,
+	.post-card-link:hover .link-arrow {
+		transform: translateX(4px);
+	}
+
+	/* Section */
+	.section {
+		padding: 64px 24px;
+	}
+
+	.section-alt {
+		background: var(--vp-c-bg-alt);
+	}
+
+	.section-container {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 32px;
+	}
+
+	.section-title-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.section-icon {
+		font-size: 1.5rem;
+	}
+
+	.section-title {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+	}
+
+	.section-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		color: var(--vp-c-brand-1);
+		text-decoration: none;
+		font-size: 0.9375rem;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+
+	.section-link:hover {
+		color: var(--vp-c-brand-2);
+	}
+
+	/* Posts Grid */
+	.posts-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+		gap: 24px;
+	}
+
+	.post-card {
+		background: var(--vp-c-bg-elv);
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 12px;
+		padding: 24px;
+		transition: all 0.2s;
+	}
+
+	.post-card:hover {
+		border-color: var(--vp-c-brand-1);
+		box-shadow: var(--vp-shadow-2);
+		transform: translateY(-2px);
+	}
+
+	.post-card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+	}
+
+	.post-category {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--vp-c-brand-1);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.post-date {
+		font-size: 0.875rem;
+		color: var(--vp-c-text-3);
+	}
+
+	.post-card-title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin-bottom: 12px;
+		line-height: 1.4;
+	}
+
+	.post-card-title a {
+		color: var(--vp-c-text-1);
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.post-card-title a:hover {
+		color: var(--vp-c-brand-1);
+	}
+
+	.post-card-excerpt {
+		font-size: 0.9375rem;
+		color: var(--vp-c-text-2);
+		line-height: 1.6;
+		margin-bottom: 16px;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.post-card-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		color: var(--vp-c-brand-1);
+		text-decoration: none;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	/* Gallery Grid */
+	.gallery-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 20px;
+	}
+
+	.gallery-item {
+		position: relative;
+	}
+
+	.gallery-item-large {
+		grid-column: span 2;
+		grid-row: span 2;
+	}
+
+	.gallery-image {
+		position: relative;
+		aspect-ratio: 1;
+		border-radius: 12px;
+		overflow: hidden;
+		background: var(--vp-c-bg-elv);
+	}
+
+	.gallery-item-large .gallery-image {
+		aspect-ratio: auto;
+		height: 100%;
+	}
+
+	.image-placeholder {
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(135deg, var(--vp-c-brand-soft) 0%, var(--vp-c-bg-soft) 100%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.placeholder-icon {
+		font-size: 3rem;
+		color: var(--vp-c-brand-1);
+		opacity: 0.5;
+	}
+
+	.gallery-overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+		opacity: 0;
+		transition: opacity 0.2s;
+		display: flex;
+		align-items: flex-end;
+		padding: 16px;
+	}
+
+	.gallery-item:hover .gallery-overlay {
+		opacity: 1;
+	}
+
+	.gallery-category {
+		color: white;
+		font-size: 0.75rem;
+		font-weight: 500;
+		padding: 4px 10px;
+		background: var(--vp-c-brand-1);
+		border-radius: 4px;
+	}
+
+	.gallery-title {
+		margin-top: 12px;
+		font-size: 0.9375rem;
+		font-weight: 500;
+		color: var(--vp-c-text-1);
+	}
+
+	/* CTA Card */
+	.cta-card {
+		position: relative;
+		background: var(--vp-c-bg-elv);
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 16px;
+		padding: 48px;
+		overflow: hidden;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.cta-content {
+		max-width: 500px;
+		position: relative;
+		z-index: 1;
+	}
+
+	.cta-title {
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+		margin-bottom: 12px;
+	}
+
+	.cta-desc {
+		font-size: 1rem;
+		color: var(--vp-c-text-2);
+		line-height: 1.7;
+		margin-bottom: 24px;
+	}
+
+	.cta-decoration {
+		position: relative;
+		width: 200px;
+		height: 200px;
+	}
+
+	.decoration-circle {
+		position: absolute;
+		width: 150px;
+		height: 150px;
+		border-radius: 50%;
+		background: var(--vp-c-brand-soft);
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	.decoration-circle-2 {
+		width: 100px;
+		height: 100px;
+		background: var(--vp-c-brand-1);
+		opacity: 0.2;
+		animation: pulse 3s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		0%, 100% { transform: translate(-50%, -50%) scale(1); }
+		50% { transform: translate(-50%, -50%) scale(1.1); }
+	}
+
+	/* Responsive */
+	@media (max-width: 1024px) {
+		.gallery-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.gallery-item-large {
+			grid-column: span 1;
+			grid-row: span 1;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.hero {
+			padding: 64px 16px 48px;
+		}
+
+		.section {
+			padding: 48px 16px;
+		}
+
+		.posts-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.gallery-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 12px;
+		}
+
+		.cta-card {
+			padding: 32px;
+			flex-direction: column;
+			text-align: center;
+			gap: 32px;
+		}
+
+		.cta-decoration {
+			width: 150px;
+			height: 150px;
+		}
+
+		.section-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+		}
+	}
+</style>

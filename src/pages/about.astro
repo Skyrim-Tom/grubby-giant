@@ -1,11 +1,500 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = "关于";
+const description = "了解更多关于博主的信息";
+
+const skills = [
+	{ name: "Astro", level: 90 },
+	{ name: "TypeScript", level: 85 },
+	{ name: "Vue.js", level: 88 },
+	{ name: "Node.js", level: 80 },
+	{ name: "GitHub Actions", level: 75 },
+];
+
+const socialLinks = [
+	{
+		name: "GitHub",
+		url: "https://github.com",
+		icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`
+	},
+	{
+		name: "Twitter",
+		url: "https://twitter.com",
+		icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`
+	},
+	{
+		name: "Email",
+		url: "mailto:hello@example.com",
+		icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`
+	}
+];
 ---
 
-<Layout>
-	<Welcome />
+<Layout title={title} description={description}>
+	<div class="about-page">
+		<!-- Hero Section -->
+		<section class="about-hero">
+			<div class="hero-container">
+				<div class="profile-section">
+					<div class="avatar-wrapper">
+						<div class="avatar">
+							<span class="avatar-text">M</span>
+						</div>
+						<div class="avatar-ring"></div>
+					</div>
+					<div class="profile-info">
+						<h1 class="profile-name">Momoc</h1>
+						<p class="profile-role">前端开发者 / 摄影爱好者</p>
+						<div class="profile-tags">
+							<span class="profile-tag">◆ 热爱技术</span>
+							<span class="profile-tag">◆ 记录生活</span>
+							<span class="profile-tag">◆ 分享摄影</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Content Grid -->
+		<div class="content-grid">
+			<!-- Main Content -->
+			<div class="main-content">
+				<!-- About Section -->
+				<section class="content-section">
+					<div class="section-header">
+						<div class="section-icon-wrapper">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+								<circle cx="12" cy="7" r="4"/>
+							</svg>
+						</div>
+						<h2 class="section-title">关于我</h2>
+					</div>
+					<div class="section-body">
+						<p>
+							欢迎来到我的博客！我是一名热爱技术的前端开发者，专注于现代 Web 开发技术。
+							在这里，我会分享我的技术学习心得、项目实战经验以及生活感悟。
+						</p>
+						<p>
+							除了编程，我还热爱摄影，喜欢用镜头记录生活中的美好瞬间。
+							这个博客使用 <strong>Astro</strong> 框架构建，部署在阿里云服务器上，
+							通过 <strong>GitHub Actions</strong> 实现自动化部署。
+						</p>
+					</div>
+				</section>
+
+				<!-- Skills Section -->
+				<section class="content-section">
+					<div class="section-header">
+						<div class="section-icon-wrapper">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+							</svg>
+						</div>
+						<h2 class="section-title">技术栈</h2>
+					</div>
+					<div class="skills-list">
+						{skills.map((skill) => (
+							<div class="skill-item">
+								<div class="skill-info">
+									<span class="skill-name">{skill.name}</span>
+									<span class="skill-level">{skill.level}%</span>
+								</div>
+								<div class="skill-bar">
+									<div class="skill-progress" style={`width: ${skill.level}%`}></div>
+								</div>
+							</div>
+						))}
+					</div>
+				</section>
+			</div>
+
+			<!-- Sidebar -->
+			<aside class="sidebar">
+				<!-- Connect Section -->
+				<div class="sidebar-section">
+					<h3 class="sidebar-title">联系方式</h3>
+					<div class="social-links">
+						{socialLinks.map((link) => (
+							<a href={link.url} target="_blank" rel="noopener noreferrer" class="social-link">
+								<span class="social-icon" set:html={link.icon} />
+								<span class="social-name">{link.name}</span>
+								<svg class="social-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M7 17L17 7M17 7H7M17 7V17"/>
+								</svg>
+							</a>
+						))}
+					</div>
+				</div>
+
+				<!-- Stats Section -->
+				<div class="sidebar-section">
+					<h3 class="sidebar-title">数据统计</h3>
+					<div class="stats-grid">
+						<div class="stat-box">
+							<span class="stat-number">5+</span>
+							<span class="stat-label">年开发经验</span>
+						</div>
+						<div class="stat-box">
+							<span class="stat-number">20+</span>
+							<span class="stat-label">技术文章</span>
+						</div>
+						<div class="stat-box">
+							<span class="stat-number">100+</span>
+							<span class="stat-label">摄影作品</span>
+						</div>
+					</div>
+				</div>
+			</aside>
+		</div>
+	</div>
 </Layout>
+
+<style>
+	.about-page {
+		padding-bottom: 64px;
+	}
+
+	/* Hero Section */
+	.about-hero {
+		background: linear-gradient(180deg, var(--vp-c-bg-alt) 0%, var(--vp-c-bg) 100%);
+		padding: 64px 24px;
+		border-bottom: 1px solid var(--vp-c-divider);
+	}
+
+	.hero-container {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.profile-section {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+
+	.avatar-wrapper {
+		position: relative;
+		margin-bottom: 24px;
+	}
+
+	.avatar {
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-2) 100%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		z-index: 1;
+	}
+
+	.avatar-text {
+		font-size: 3rem;
+		font-weight: 700;
+		color: white;
+	}
+
+	.avatar-ring {
+		position: absolute;
+		inset: -8px;
+		border-radius: 50%;
+		border: 2px solid var(--vp-c-brand-1);
+		opacity: 0.3;
+		animation: pulse-ring 3s ease-in-out infinite;
+	}
+
+	@keyframes pulse-ring {
+		0%, 100% { transform: scale(1); opacity: 0.3; }
+		50% { transform: scale(1.05); opacity: 0.5; }
+	}
+
+	.profile-name {
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--vp-c-text-1);
+		margin-bottom: 8px;
+	}
+
+	.profile-role {
+		font-size: 1.125rem;
+		color: var(--vp-c-text-2);
+		margin-bottom: 16px;
+	}
+
+	.profile-tags {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.profile-tag {
+		font-size: 0.875rem;
+		color: var(--vp-c-brand-1);
+		font-weight: 500;
+	}
+
+	/* Content Grid */
+	.content-grid {
+		max-width: 1000px;
+		margin: 0 auto;
+		padding: 48px 24px;
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: 48px;
+	}
+
+	/* Content Section */
+	.content-section {
+		background: var(--vp-c-bg-elv);
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 12px;
+		padding: 32px;
+		margin-bottom: 24px;
+	}
+
+	.content-section:last-child {
+		margin-bottom: 0;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 20px;
+	}
+
+	.section-icon-wrapper {
+		width: 40px;
+		height: 40px;
+		border-radius: 8px;
+		background: var(--vp-c-brand-soft);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--vp-c-brand-1);
+	}
+
+	.section-icon-wrapper svg {
+		width: 20px;
+		height: 20px;
+	}
+
+	.section-title {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+	}
+
+	.section-body {
+		color: var(--vp-c-text-2);
+		line-height: 1.8;
+	}
+
+	.section-body p {
+		margin-bottom: 16px;
+	}
+
+	.section-body p:last-child {
+		margin-bottom: 0;
+	}
+
+	.section-body strong {
+		color: var(--vp-c-text-1);
+		font-weight: 600;
+	}
+
+	/* Skills */
+	.skills-list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.skill-item {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.skill-info {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.skill-name {
+		font-size: 0.9375rem;
+		font-weight: 500;
+		color: var(--vp-c-text-1);
+	}
+
+	.skill-level {
+		font-size: 0.875rem;
+		color: var(--vp-c-text-3);
+	}
+
+	.skill-bar {
+		height: 6px;
+		background: var(--vp-c-bg-soft);
+		border-radius: 3px;
+		overflow: hidden;
+	}
+
+	.skill-progress {
+		height: 100%;
+		background: linear-gradient(90deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-2) 100%);
+		border-radius: 3px;
+		transition: width 0.5s ease;
+	}
+
+	/* Sidebar */
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.sidebar-section {
+		background: var(--vp-c-bg-elv);
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 12px;
+		padding: 24px;
+	}
+
+	.sidebar-title {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 16px;
+	}
+
+	/* Social Links */
+	.social-links {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.social-link {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px;
+		border-radius: 8px;
+		color: var(--vp-c-text-1);
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.social-link:hover {
+		background: var(--vp-c-bg-soft);
+	}
+
+	.social-icon {
+		width: 20px;
+		height: 20px;
+		color: var(--vp-c-text-2);
+	}
+
+	.social-icon :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+
+	.social-name {
+		flex: 1;
+		font-size: 0.9375rem;
+		font-weight: 500;
+	}
+
+	.social-arrow {
+		width: 16px;
+		height: 16px;
+		color: var(--vp-c-text-3);
+		transition: all 0.2s;
+	}
+
+	.social-link:hover .social-arrow {
+		color: var(--vp-c-brand-1);
+		transform: translate(2px, -2px);
+	}
+
+	/* Stats Grid */
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(1, 1fr);
+		gap: 12px;
+	}
+
+	.stat-box {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 16px;
+		background: var(--vp-c-bg-soft);
+		border-radius: 8px;
+		text-align: center;
+	}
+
+	.stat-number {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--vp-c-brand-1);
+	}
+
+	.stat-label {
+		font-size: 0.8125rem;
+		color: var(--vp-c-text-2);
+	}
+
+	/* Responsive */
+	@media (max-width: 1024px) {
+		.content-grid {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+
+		.sidebar {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.about-hero {
+			padding: 48px 16px;
+		}
+
+		.avatar {
+			width: 100px;
+			height: 100px;
+		}
+
+		.avatar-text {
+			font-size: 2.5rem;
+		}
+
+		.profile-name {
+			font-size: 1.5rem;
+		}
+
+		.content-grid {
+			padding: 32px 16px;
+		}
+
+		.content-section {
+			padding: 24px;
+		}
+
+		.sidebar {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

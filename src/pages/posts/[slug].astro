@@ -1,0 +1,497 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ArticleList from '../../components/ArticleList.vue';
+import TableOfContents from '../../components/TableOfContents.vue';
+
+// 生成所有文章路径
+export async function getStaticPaths() {
+	const posts = await getCollection('posts');
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: { post },
+	}));
+}
+
+// 获取文章数据
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+// 获取所有文章用于侧边栏
+const allPosts = await getCollection('posts');
+const sortedPosts = allPosts.sort((a, b) => 
+	new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+
+// 格式化日期
+function formatDate(date: Date) {
+	return new Date(date).toISOString().split('T')[0];
+}
+
+// 提取目录（h2 和 h3）
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+<Layout title={post.data.title} description={post.data.description}>
+	<div class="post-page">
+		<!-- Article Header -->
+		<div class="article-hero">
+			<div class="hero-container">
+				<div class="article-meta">
+					<span class="meta-category">{post.data.category}</span>
+					<span class="meta-divider"></span>
+					<time class="meta-date">{formatDate(post.data.pubDate)}</time>
+					<span class="meta-divider"></span>
+					<span class="meta-readtime">{post.data.readTime}阅读</span>
+				</div>
+				<h1 class="article-title">{post.data.title}</h1>
+				<div class="article-tags">
+					{post.data.tags.map((tag: string) => (
+						<span class="article-tag">{tag}</span>
+					))}
+				</div>
+			</div>
+		</div>
+
+		<!-- Article Layout with Sidebar -->
+		<div class="article-layout">
+			<!-- Left Sidebar: Article List -->
+			<aside class="sidebar-left">
+				<ArticleList posts={sortedPosts} currentPostId={post.id} client:load />
+			</aside>
+
+			<!-- Main Content -->
+			<main class="article-main">
+				<article class="article-content">
+					<div class="article-body" id="article-content">
+						<Content />
+					</div>
+				</article>
+
+				<!-- Article Footer -->
+				<footer class="article-footer">
+					<a href="/posts" class="back-link">
+						<svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M19 12H5M12 19l-7-7 7-7"/>
+						</svg>
+						返回文章列表
+					</a>
+				</footer>
+			</main>
+
+			<!-- Right Sidebar: Table of Contents -->
+			<aside class="sidebar-right">
+				<TableOfContents headings={toc} client:load />
+			</aside>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.post-page {
+		min-height: calc(100vh - var(--header-height));
+	}
+
+	/* Article Hero */
+	.article-hero {
+		background: linear-gradient(180deg, var(--vp-c-bg-alt) 0%, var(--vp-c-bg) 100%);
+		padding: 48px 24px 32px;
+		border-bottom: 1px solid var(--vp-c-divider);
+	}
+
+	.hero-container {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.article-meta {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 16px;
+		font-size: 0.875rem;
+	}
+
+	.meta-category {
+		color: var(--vp-c-brand-1);
+		font-weight: 600;
+	}
+
+	.meta-divider {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--vp-c-text-3);
+	}
+
+	.meta-date,
+	.meta-readtime {
+		color: var(--vp-c-text-3);
+	}
+
+	.article-title {
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		font-weight: 700;
+		color: var(--vp-c-text-1);
+		line-height: 1.3;
+		margin-bottom: 20px;
+		letter-spacing: -0.02em;
+	}
+
+	.article-tags {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.article-tag {
+		padding: 4px 12px;
+		background: var(--vp-c-bg-soft);
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 4px;
+		font-size: 0.8125rem;
+		color: var(--vp-c-text-2);
+	}
+
+	/* Article Container */
+	.article-container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 48px 24px 64px;
+	}
+
+	.article-content {
+		background: var(--vp-c-bg-elv);
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 12px;
+		padding: 40px;
+	}
+
+	/* Article Body - Typography */
+	.article-body :global(h2) {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+		margin: 40px 0 16px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--vp-c-divider);
+	}
+
+	.article-body :global(h3) {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+		margin: 32px 0 12px;
+	}
+
+	.article-body :global(p) {
+		font-size: 1rem;
+		line-height: 1.8;
+		color: var(--vp-c-text-2);
+		margin-bottom: 20px;
+	}
+
+	.article-body :global(strong) {
+		color: var(--vp-c-text-1);
+		font-weight: 600;
+	}
+
+	/* Code Blocks */
+	.article-body :global(pre) {
+		background: var(--vp-c-bg-alt);
+		border-radius: 8px;
+		padding: 20px;
+		overflow-x: auto;
+		margin: 20px 0;
+		border: 1px solid var(--vp-c-divider);
+	}
+
+	.article-body :global(code) {
+		font-family: var(--vp-font-family-mono);
+		font-size: 0.875rem;
+	}
+
+	.article-body :global(pre code) {
+		background: none;
+		padding: 0;
+		color: var(--vp-c-text-1);
+	}
+
+	.article-body :global(:not(pre) > code) {
+		background: var(--vp-c-brand-soft);
+		color: var(--vp-c-brand-1);
+		padding: 2px 8px;
+		border-radius: 4px;
+		font-size: 0.875em;
+	}
+
+	/* Lists */
+	.article-body :global(ul),
+	.article-body :global(ol) {
+		margin: 20px 0;
+		padding-left: 24px;
+	}
+
+	.article-body :global(li) {
+		font-size: 1rem;
+		line-height: 1.8;
+		color: var(--vp-c-text-2);
+		margin-bottom: 8px;
+	}
+
+	/* Blockquotes */
+	.article-body :global(blockquote) {
+		border-left: 4px solid var(--vp-c-brand-1);
+		padding-left: 20px;
+		margin: 20px 0;
+		color: var(--vp-c-text-2);
+		font-style: italic;
+	}
+
+	/* Links */
+	.article-body :global(a) {
+		color: var(--vp-c-brand-1);
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.article-body :global(a:hover) {
+		text-decoration: underline;
+	}
+
+	/* Tables */
+	.article-body :global(table) {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 20px 0;
+	}
+
+	.article-body :global(th),
+	.article-body :global(td) {
+		padding: 12px;
+		border: 1px solid var(--vp-c-divider);
+		text-align: left;
+	}
+
+	.article-body :global(th) {
+		background: var(--vp-c-bg-soft);
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+	}
+
+	/* Article Footer */
+	.article-footer {
+		margin-top: 48px;
+		padding-top: 32px;
+		border-top: 1px solid var(--vp-c-divider);
+	}
+
+	.back-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--vp-c-brand-1);
+		text-decoration: none;
+		font-size: 0.9375rem;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+
+	.back-link:hover {
+		color: var(--vp-c-brand-2);
+	}
+
+	.back-icon {
+		width: 16px;
+		height: 16px;
+		transition: transform 0.2s;
+	}
+
+	.back-link:hover .back-icon {
+		transform: translateX(-4px);
+	}
+
+	/* Article Layout */
+	.article-layout {
+		display: grid;
+		grid-template-columns: 280px 1fr 240px;
+		gap: 32px;
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 32px 24px 64px;
+	}
+
+	/* Sidebars */
+	.sidebar-left,
+	.sidebar-right {
+		position: sticky;
+		top: calc(var(--header-height) + 32px);
+		height: fit-content;
+		max-height: calc(100vh - var(--header-height) - 64px);
+		overflow-y: auto;
+	}
+
+	.sidebar-content {
+		background: var(--vp-c-bg-elv);
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 12px;
+		padding: 20px;
+	}
+
+	.sidebar-title {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--vp-c-text-1);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 16px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--vp-c-divider);
+	}
+
+	/* Left Sidebar - Article List */
+	.article-nav {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.article-nav-item {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 10px 12px;
+		border-radius: 8px;
+		color: var(--vp-c-text-1);
+		text-decoration: none;
+		transition: all 0.2s;
+		border-left: 3px solid transparent;
+	}
+
+	.article-nav-item:hover {
+		background: var(--vp-c-bg-soft);
+	}
+
+	.article-nav-item.active {
+		background: var(--vp-c-brand-soft);
+		border-left-color: var(--vp-c-brand-1);
+	}
+
+	.nav-item-category {
+		font-size: 0.75rem;
+		color: var(--vp-c-brand-1);
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.nav-item-title {
+		font-size: 0.875rem;
+		line-height: 1.4;
+		color: var(--vp-c-text-1);
+		font-weight: 500;
+	}
+
+	.article-nav-item:hover .nav-item-title {
+		color: var(--vp-c-brand-1);
+	}
+
+	/* Right Sidebar - Table of Contents */
+	.toc-nav {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.toc-link {
+		display: block;
+		padding: 6px 10px;
+		border-radius: 6px;
+		color: var(--vp-c-text-2);
+		text-decoration: none;
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		transition: all 0.2s;
+		border-left: 2px solid transparent;
+	}
+
+	.toc-link:hover {
+		color: var(--vp-c-text-1);
+		background: var(--vp-c-bg-soft);
+	}
+
+	.toc-link.active {
+		color: var(--vp-c-brand-1);
+		background: var(--vp-c-brand-soft);
+		border-left-color: var(--vp-c-brand-1);
+		font-weight: 500;
+	}
+
+	.toc-level-3 {
+		padding-left: 20px;
+		font-size: 0.75rem;
+	}
+
+	/* Main Content */
+	.article-main {
+		min-width: 0;
+	}
+
+	/* Responsive */
+	@media (max-width: 1200px) {
+		.article-layout {
+			grid-template-columns: 260px 1fr;
+		}
+
+		.sidebar-right {
+			display: none;
+		}
+	}
+
+	@media (max-width: 900px) {
+		.article-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.sidebar-left {
+			position: static;
+			max-height: none;
+			order: 2;
+		}
+
+		.article-main {
+			order: 1;
+		}
+
+		.sidebar-content {
+			max-height: 300px;
+			overflow-y: auto;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.article-hero {
+			padding: 32px 16px 24px;
+		}
+
+		.article-layout {
+			padding: 24px 16px 48px;
+		}
+
+		.article-content {
+			padding: 24px;
+		}
+
+		.article-meta {
+			flex-wrap: wrap;
+		}
+
+		.article-body :global(h2) {
+			font-size: 1.25rem;
+		}
+
+		.article-body :global(h3) {
+			font-size: 1.125rem;
+		}
+	}
+</style>
