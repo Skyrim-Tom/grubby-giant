@@ -19,9 +19,6 @@ export default defineConfig({
         light: 'github-light',
         dark: 'github-dark',
       },
-      // 禁用默认配色，让 CSS 控制主题显示
-      // https://shiki.style/guide/dual-themes#without-default-color
-      defaultColor: false,
       // 启用自动换行以防止水平滚动
       wrap: true,
     },

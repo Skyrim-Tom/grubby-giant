@@ -224,20 +224,13 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 	}
 
 	/* Shiki 双主题代码高亮 */
-	[data-theme="light"] .article-body :global(.shiki.github-light) {
-		display: block;
-	}
-
-	[data-theme="light"] .article-body :global(.shiki.github-dark) {
-		display: none;
-	}
-
-	[data-theme="dark"] .article-body :global(.shiki.github-dark) {
-		display: block;
-	}
-
-	[data-theme="dark"] .article-body :global(.shiki.github-light) {
-		display: none;
+	[data-theme="dark"] .article-body :global(.astro-code),
+	[data-theme="dark"] .article-body :global(.astro-code span) {
+		color: var(--shiki-dark) !important;
+		background-color: var(--shiki-dark-bg) !important;
+		font-style: var(--shiki-dark-font-style) !important;
+		font-weight: var(--shiki-dark-font-weight) !important;
+		text-decoration: var(--shiki-dark-text-decoration) !important;
 	}
 
 	/* Lists */

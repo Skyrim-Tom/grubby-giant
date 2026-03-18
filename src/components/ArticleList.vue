@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 interface Post {
 	id: string;
 	data: {
@@ -11,25 +13,41 @@ const props = defineProps<{
 	posts: Post[];
 	currentPostId: string;
 }>();
+
+// 按分类分组
+const groupedPosts = computed(() => {
+	const groups: Record<string, Post[]> = {};
+	for (const post of props.posts) {
+		const cat = post.data.category;
+		if (!groups[cat]) groups[cat] = [];
+		groups[cat].push(post);
+	}
+	return groups;
+});
+
+// 分类顺序（按第一篇出现顺序）
+const categories = computed(() => Object.keys(groupedPosts.value));
 </script>
 
 <template>
 	<div class="article-list-container">
 		<h3 class="list-title">文章列表</h3>
-		<nav class="article-nav">
-			<a
-				v-for="post in posts"
-				:key="post.id"
-				:href="`/posts/${post.id}`"
-				:class="[
-					'article-nav-item',
-					{ active: post.id === currentPostId }
-				]"
-			>
-				<span class="nav-item-category">{{ post.data.category }}</span>
-				<span class="nav-item-title">{{ post.data.title }}</span>
-			</a>
-		</nav>
+		<div class="category-group" v-for="cat in categories" :key="cat">
+			<div class="category-label">
+				<span class="category-icon">▸</span>
+				{{ cat }}
+			</div>
+			<nav class="article-nav">
+				<a
+					v-for="post in groupedPosts[cat]"
+					:key="post.id"
+					:href="`/posts/${post.id}`"
+					:class="['article-nav-item', { active: post.id === currentPostId }]"
+				>
+					{{ post.data.title }}
+				</a>
+			</nav>
+		</div>
 	</div>
 </template>
 
@@ -52,49 +70,60 @@ const props = defineProps<{
 	border-bottom: 1px solid var(--vp-c-divider);
 }
 
+.category-group {
+	margin-bottom: 12px;
+}
+
+.category-group:last-child {
+	margin-bottom: 0;
+}
+
+.category-label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--vp-c-brand-1);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	padding: 6px 8px;
+	margin-bottom: 2px;
+}
+
+.category-icon {
+	font-size: 0.65rem;
+	line-height: 1;
+}
+
 .article-nav {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 2px;
 }
 
 .article-nav-item {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	padding: 10px 12px;
-	border-radius: 8px;
-	color: var(--vp-c-text-1);
+	display: block;
+	padding: 8px 12px;
+	border-radius: 6px;
+	color: var(--vp-c-text-2);
 	text-decoration: none;
+	font-size: 0.875rem;
+	line-height: 1.4;
+	font-weight: 400;
 	transition: all 0.2s;
-	border-left: 3px solid transparent;
+	border-left: 2px solid transparent;
 }
 
 .article-nav-item:hover {
+	color: var(--vp-c-text-1);
 	background: var(--vp-c-bg-soft);
 }
 
 .article-nav-item.active {
+	color: var(--vp-c-brand-1);
 	background: var(--vp-c-brand-soft);
 	border-left-color: var(--vp-c-brand-1);
-}
-
-.nav-item-category {
-	font-size: 0.75rem;
-	color: var(--vp-c-brand-1);
 	font-weight: 500;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-}
-
-.nav-item-title {
-	font-size: 0.875rem;
-	line-height: 1.4;
-	color: var(--vp-c-text-1);
-	font-weight: 500;
-}
-
-.article-nav-item:hover .nav-item-title {
-	color: var(--vp-c-brand-1);
 }
 </style>
