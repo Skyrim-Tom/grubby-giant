@@ -198,7 +198,6 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 
 	/* Code Blocks */
 	.article-body :global(pre) {
-		background: var(--vp-c-bg-alt);
 		border-radius: 8px;
 		padding: 20px;
 		overflow-x: auto;
@@ -214,7 +213,6 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 	.article-body :global(pre code) {
 		background: none;
 		padding: 0;
-		color: var(--vp-c-text-1);
 	}
 
 	.article-body :global(:not(pre) > code) {
@@ -223,6 +221,23 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 		padding: 2px 8px;
 		border-radius: 4px;
 		font-size: 0.875em;
+	}
+
+	/* Shiki 双主题代码高亮 */
+	[data-theme="light"] .article-body :global(.shiki.github-light) {
+		display: block;
+	}
+
+	[data-theme="light"] .article-body :global(.shiki.github-dark) {
+		display: none;
+	}
+
+	[data-theme="dark"] .article-body :global(.shiki.github-dark) {
+		display: block;
+	}
+
+	[data-theme="dark"] .article-body :global(.shiki.github-light) {
+		display: none;
 	}
 
 	/* Lists */
