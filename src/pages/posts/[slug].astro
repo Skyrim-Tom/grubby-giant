@@ -224,13 +224,13 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 	}
 
 	/* Shiki 双主题代码高亮 */
-	[data-theme="dark"] .article-body :global(.astro-code),
+	/* 浅色为默认，深色模式下覆盖内联 style */
+	[data-theme="dark"] .article-body :global(.astro-code) {
+		background-color: var(--shiki-dark-bg) !important;
+	}
+
 	[data-theme="dark"] .article-body :global(.astro-code span) {
 		color: var(--shiki-dark) !important;
-		background-color: var(--shiki-dark-bg) !important;
-		font-style: var(--shiki-dark-font-style) !important;
-		font-weight: var(--shiki-dark-font-weight) !important;
-		text-decoration: var(--shiki-dark-text-decoration) !important;
 	}
 
 	/* Lists */
