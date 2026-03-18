@@ -342,4 +342,14 @@ const currentPath = Astro.url.pathname;
 			display: none;
 		}
 	}
+
+	/* ===== Shiki 双主题代码高亮 ===== */
+	/* 浅色为 Shiki 默认输出，深色模式下用 !important 覆盖内联 style */
+	[data-theme="dark"] .astro-code {
+		background-color: var(--shiki-dark-bg) !important;
+	}
+
+	[data-theme="dark"] .astro-code span {
+		color: var(--shiki-dark) !important;
+	}
 </style>

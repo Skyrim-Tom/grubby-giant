@@ -223,15 +223,7 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 		font-size: 0.875em;
 	}
 
-	/* Shiki 双主题代码高亮 */
-	/* 浅色为默认，深色模式下覆盖内联 style */
-	[data-theme="dark"] .article-body :global(.astro-code) {
-		background-color: var(--shiki-dark-bg) !important;
-	}
-
-	[data-theme="dark"] .article-body :global(.astro-code span) {
-		color: var(--shiki-dark) !important;
-	}
+	/* Shiki 双主题代码高亮已在 Layout.astro 全局样式中统一处理 */
 
 	/* Lists */
 	.article-body :global(ul),
