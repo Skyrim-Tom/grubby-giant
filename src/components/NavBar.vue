@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Hexagon } from 'lucide-vue-next';
+
 interface NavItem {
 	href: string;
 	text: string;
@@ -27,7 +29,7 @@ const isActive = (href: string): boolean => {
 	<header class="header">
 		<div class="header-container">
 			<a href="/" class="logo">
-				<span class="logo-icon">◆</span>
+				<Hexagon class="logo-icon" :stroke-width="2.5" />
 				<span class="logo-text">Momoc's Blog</span>
 			</a>
 			
@@ -89,7 +91,13 @@ const isActive = (href: string): boolean => {
 
 .logo-icon {
 	color: var(--vp-c-brand-1);
-	font-size: 1.5rem;
+	width: 28px;
+	height: 28px;
+	transition: transform 0.3s ease;
+}
+
+.logo:hover .logo-icon {
+	transform: rotate(30deg);
 }
 
 .nav {

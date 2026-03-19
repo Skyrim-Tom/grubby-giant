@@ -4,6 +4,9 @@ import Layout from '../layouts/Layout.astro';
 const title = "相册";
 const description = "我的摄影作品展示";
 
+// CDN 基础路径 - 修改为你的 GitHub 用户名和仓库名
+const CDN_BASE = "https://cdn.jsdelivr.net/gh/yourname/blog-images@main/gallery";
+
 const photos = [
 	{
 		id: 1,
@@ -11,7 +14,9 @@ const photos = [
 		description: "海边日落的美丽瞬间，金色的阳光洒在海面上",
 		category: "风景",
 		location: "厦门",
-		date: "2026-03-10"
+		date: "2026-03-10",
+		imageUrl: `${CDN_BASE}/sunset-xiamen.jpg`,
+		thumbUrl: `${CDN_BASE}/sunset-xiamen-thumb.jpg`
 	},
 	{
 		id: 2,
@@ -19,7 +24,9 @@ const photos = [
 		description: "繁华都市的霓虹灯光，展现现代城市的魅力",
 		category: "城市",
 		location: "上海",
-		date: "2026-03-05"
+		date: "2026-03-05",
+		imageUrl: `${CDN_BASE}/city-night-shanghai.jpg`,
+		thumbUrl: `${CDN_BASE}/city-night-shanghai-thumb.jpg`
 	},
 	{
 		id: 3,
@@ -27,7 +34,9 @@ const photos = [
 		description: "樱花盛开的季节，粉色的花瓣随风飘落",
 		category: "自然",
 		location: "杭州",
-		date: "2026-03-01"
+		date: "2026-03-01",
+		imageUrl: `${CDN_BASE}/spring-flowers-hangzhou.jpg`,
+		thumbUrl: `${CDN_BASE}/spring-flowers-hangzhou-thumb.jpg`
 	},
 	{
 		id: 4,
@@ -35,7 +44,9 @@ const photos = [
 		description: "老街上的手艺人，专注地制作着传统工艺品",
 		category: "人文",
 		location: "成都",
-		date: "2026-02-28"
+		date: "2026-02-28",
+		imageUrl: `${CDN_BASE}/street-culture-chengdu.jpg`,
+		thumbUrl: `${CDN_BASE}/street-culture-chengdu-thumb.jpg`
 	},
 	{
 		id: 5,
@@ -43,7 +54,9 @@ const photos = [
 		description: "清晨的山间云雾缭绕，宛如仙境",
 		category: "风景",
 		location: "黄山",
-		date: "2026-02-20"
+		date: "2026-02-20",
+		imageUrl: `${CDN_BASE}/mountain-mist-huangshan.jpg`,
+		thumbUrl: `${CDN_BASE}/mountain-mist-huangshan-thumb.jpg`
 	},
 	{
 		id: 6,
@@ -51,7 +64,9 @@ const photos = [
 		description: "江南水乡的宁静与古朴，小桥流水人家",
 		category: "城市",
 		location: "乌镇",
-		date: "2026-02-15"
+		date: "2026-02-15",
+		imageUrl: `${CDN_BASE}/ancient-town-wuzhen.jpg`,
+		thumbUrl: `${CDN_BASE}/ancient-town-wuzhen-thumb.jpg`
 	}
 ];
 
@@ -105,14 +120,21 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 				{photos.map((photo, index) => (
 					<div class="photo-card" data-category={photo.category} style={`animation-delay: ${index * 0.1}s`}>
 						<div class="photo-image">
-							<div class="image-placeholder">
+							<img 
+								src={photo.thumbUrl || photo.imageUrl} 
+								alt={photo.title}
+								class="photo-img"
+								loading="lazy"
+								onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+							/>
+							<div class="image-placeholder" style="display: none;">
 								<svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 									<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
 									<circle cx="8.5" cy="8.5" r="1.5"/>
 									<polyline points="21 15 16 10 5 21"/>
 								</svg>
 							</div>
-							<div class="photo-overlay">
+							<div class="photo-overlay" data-full-image={photo.imageUrl}>
 								<div class="overlay-content">
 									<span class="photo-category">{photo.category}</span>
 									<button class="view-btn">
@@ -340,6 +362,17 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 		aspect-ratio: 4/3;
 		overflow: hidden;
 		background: var(--vp-c-bg-soft);
+	}
+
+	.photo-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.5s ease;
+	}
+
+	.photo-card:hover .photo-img {
+		transform: scale(1.05);
 	}
 
 	.image-placeholder {
