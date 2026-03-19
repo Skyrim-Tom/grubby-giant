@@ -9,21 +9,16 @@ declare global {
 	}
 }
 
-// 从全局变量同步获取初始主题，避免闪烁
+// 从 DOM 同步获取当前主题状态
 const getInitialTheme = (): boolean => {
-	if (typeof window !== 'undefined' && window.__INITIAL_THEME__) {
-		return window.__INITIAL_THEME__ === 'dark';
+	if (typeof document !== 'undefined') {
+		const theme = document.documentElement.getAttribute('data-theme');
+		return theme === 'dark';
 	}
 	return false;
 };
 
 const isDark = ref(getInitialTheme());
-
-onMounted(() => {
-	// 确保与 DOM 同步（处理客户端路由切换时）
-	const theme = document.documentElement.getAttribute('data-theme');
-	isDark.value = theme === 'dark';
-});
 
 const toggleTheme = () => {
 	const html = document.documentElement;
