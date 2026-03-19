@@ -31,6 +31,8 @@ const currentPath = Astro.url.pathname;
 				const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 				const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
 				document.documentElement.setAttribute('data-theme', theme);
+				// 设置全局主题状态，供 Vue 组件同步读取
+				window.__INITIAL_THEME__ = theme;
 			})();
 		</script>
 	</head>

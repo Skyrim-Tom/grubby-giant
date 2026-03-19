@@ -2,10 +2,25 @@
 import { ref, onMounted } from 'vue';
 import { Sun, Moon, Github } from 'lucide-vue-next';
 
-const isDark = ref(false);
+// 声明全局变量类型
+declare global {
+	interface Window {
+		__INITIAL_THEME__?: string;
+	}
+}
+
+// 从全局变量同步获取初始主题，避免闪烁
+const getInitialTheme = (): boolean => {
+	if (typeof window !== 'undefined' && window.__INITIAL_THEME__) {
+		return window.__INITIAL_THEME__ === 'dark';
+	}
+	return false;
+};
+
+const isDark = ref(getInitialTheme());
 
 onMounted(() => {
-	// 获取当前主题
+	// 确保与 DOM 同步（处理客户端路由切换时）
 	const theme = document.documentElement.getAttribute('data-theme');
 	isDark.value = theme === 'dark';
 });
