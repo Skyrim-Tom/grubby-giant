@@ -1,24 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import { Sun, Moon, Github } from 'lucide-vue-next';
-
-// 声明全局变量类型
-declare global {
-	interface Window {
-		__INITIAL_THEME__?: string;
-	}
-}
-
-// 从 DOM 同步获取当前主题状态
-const getInitialTheme = (): boolean => {
-	if (typeof document !== 'undefined') {
-		const theme = document.documentElement.getAttribute('data-theme');
-		return theme === 'dark';
-	}
-	return false;
-};
-
-const isDark = ref(getInitialTheme());
 
 const toggleTheme = () => {
 	const html = document.documentElement;
@@ -27,7 +8,6 @@ const toggleTheme = () => {
 	
 	html.setAttribute('data-theme', newTheme);
 	localStorage.setItem('theme', newTheme);
-	isDark.value = newTheme === 'dark';
 };
 </script>
 
@@ -44,12 +24,11 @@ const toggleTheme = () => {
 			<Github class="github-icon" />
 		</a>
 
-		<!-- 主题切换开关 -->
+		<!-- 主题切换开关 - 使用 data-theme 属性控制样式，避免水合闪烁 -->
 		<button 
 			class="theme-switch" 
 			@click="toggleTheme"
 			aria-label="切换主题"
-			:class="{ 'is-dark': isDark }"
 		>
 			<div class="switch-track">
 				<div class="switch-thumb">
@@ -114,7 +93,7 @@ const toggleTheme = () => {
 	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.theme-switch.is-dark .switch-track {
+[data-theme="dark"] .theme-switch .switch-track {
 	background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
 }
 
@@ -133,7 +112,7 @@ const toggleTheme = () => {
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.theme-switch.is-dark .switch-thumb {
+[data-theme="dark"] .theme-switch .switch-thumb {
 	transform: translateX(24px);
 }
 
@@ -154,12 +133,12 @@ const toggleTheme = () => {
 	transform: scale(0.5) rotate(-90deg);
 }
 
-.theme-switch.is-dark .switch-icon.sun {
+[data-theme="dark"] .theme-switch .switch-icon.sun {
 	opacity: 0;
 	transform: scale(0.5) rotate(90deg);
 }
 
-.theme-switch.is-dark .switch-icon.moon {
+[data-theme="dark"] .theme-switch .switch-icon.moon {
 	opacity: 1;
 	transform: scale(1) rotate(0deg);
 }
