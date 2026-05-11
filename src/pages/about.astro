@@ -1,9 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import avatarImage from '../assets/avatar.png';
 
 const title = "关于";
 const description = "了解更多关于博主的信息";
+const avatarUrl = "https://momoc.cn/common/avatar.png";
 
 const skills = [
 	{ name: "Astro", level: 90 },
@@ -53,7 +53,7 @@ const icons: Record<string, string> = {
 				<div class="profile-section">
 					<div class="avatar-wrapper">
 						<div class="avatar">
-							<img src={avatarImage.src} alt="Momoc" class="avatar-img" />
+							<img src={avatarUrl} alt="Momoc" class="avatar-img" />
 						</div>
 						<div class="avatar-ring"></div>
 					</div>
