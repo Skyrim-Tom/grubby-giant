@@ -1,5 +1,5 @@
 ---
-title: "NVM Node Version Manager"
+title: "使用nvm优雅管理多版本Node"
 description: "使用 nvm 工具优雅管理多版本 Node.js，包括安装、切换版本和设置默认版本"
 pubDate: 2020-04-08
 category: "技术教程"

@@ -1,5 +1,5 @@
 ---
-title: "Debounce Throttle Guide"
+title: "浅谈JS防抖和节流"
 description: "详解 JavaScript 防抖(debounce)和节流(throttle)的概念、实现原理及应用场景"
 pubDate: 2020-04-12
 category: "技术教程"

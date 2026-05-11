@@ -1,5 +1,5 @@
 ---
-title: "String XML Conversion"
+title: "在JavaScript中将String与XML相互转换"
 description: "在 JavaScript 中实现 String 与 XML 对象的相互转换，兼容 IE 和现代浏览器"
 pubDate: 2020-04-10
 category: "技术教程"

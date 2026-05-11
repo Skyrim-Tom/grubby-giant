@@ -1,5 +1,5 @@
 ---
-title: "Array Chunk Method"
+title: "如何用Js将数组分割成每N个为一组"
 description: "JavaScript 中将数组分割成每 N 个为一组的方法，适用于 Swiper 分页等场景"
 pubDate: 2020-04-11
 category: "技术教程"

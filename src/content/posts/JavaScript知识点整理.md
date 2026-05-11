@@ -1,5 +1,5 @@
 ---
-title: "JavaScript Basics Guide"
+title: "JavaScript知识点整理"
 description: "JavaScript 核心知识点整理，涵盖数据类型、隐式转换、类型检测、原型链、var/let/const区别等内容"
 pubDate: 2020-04-03
 category: "技术教程"

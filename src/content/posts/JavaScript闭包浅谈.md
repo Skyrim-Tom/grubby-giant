@@ -1,5 +1,5 @@
 ---
-title: "JavaScript Closure Guide"
+title: "JavaScript闭包浅谈"
 description: "深入浅出讲解 JavaScript 闭包的概念、特性、应用场景以及优缺点"
 pubDate: 2020-04-05
 category: "技术教程"

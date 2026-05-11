@@ -1,5 +1,5 @@
 ---
-title: "JavaScript Data Masking"
+title: "JavaScript通用脱敏方法"
 description: "JavaScript 通用数据脱敏方法封装，用于手机号、银行卡等隐私信息的脱敏处理"
 pubDate: 2020-04-04
 category: "技术教程"

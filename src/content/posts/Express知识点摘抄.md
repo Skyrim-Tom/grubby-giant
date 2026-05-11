@@ -1,5 +1,5 @@
 ---
-title: "Express Router Guide"
+title: "Express知识点摘抄"
 description: "Express 路由对象的常用知识点整理，包括基本用法、router.param、路由连用和正则匹配等"
 pubDate: 2020-04-02
 category: "技术教程"

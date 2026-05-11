@@ -1,5 +1,5 @@
 ---
-title: "Fetch API Guide"
+title: "还在用Ajax？不如试试Fetch"
 description: "Fetch API 详解，包括基本用法、与 AJAX 的区别以及封装方法"
 pubDate: 2020-04-15
 category: "技术教程"

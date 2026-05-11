@@ -86,7 +86,7 @@ const toggleTheme = () => {
 .switch-track {
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+	background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
 	border-radius: 14px;
 	position: relative;
 	transition: background 0.3s ease;
@@ -94,7 +94,7 @@ const toggleTheme = () => {
 }
 
 [data-theme="dark"] .theme-switch .switch-track {
-	background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+	background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
 }
 
 .switch-thumb {

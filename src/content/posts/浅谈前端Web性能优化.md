@@ -1,5 +1,5 @@
 ---
-title: "Frontend Performance Optimization"
+title: "浅谈前端Web性能优化"
 description: "前端 Web 性能优化全面指南，涵盖 HTTP 请求优化、SEO、SPA 首屏加载、SSR 等技术方案"
 pubDate: 2020-04-13
 category: "技术教程"

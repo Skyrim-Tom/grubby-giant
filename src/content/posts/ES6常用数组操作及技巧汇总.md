@@ -1,5 +1,5 @@
 ---
-title: "ES6 Array Methods and Tips"
+title: "ES6常用数组操作及技巧汇总"
 description: "全面总结 ES6 中常用的数组操作方法，包括检测、遍历、转换、排序等各种实用技巧"
 pubDate: 2020-04-01
 category: "技术教程"

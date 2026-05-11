@@ -1,5 +1,5 @@
 ---
-title: "JavaScript Promise Guide"
+title: "Promise对象详解"
 description: "全面详解 Promise 对象，包括基本用法、then/catch方法、链式调用和实际应用示例"
 pubDate: 2020-04-06
 category: "技术教程"

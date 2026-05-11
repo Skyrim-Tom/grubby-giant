@@ -1,5 +1,5 @@
 ---
-title: "Vanilla JavaScript AJAX"
+title: "纯原生JavaScript封装AJAX请求"
 description: "纯原生 JavaScript 封装 AJAX 请求方法，支持 GET 和 POST 请求"
 pubDate: 2020-04-14
 category: "技术教程"
