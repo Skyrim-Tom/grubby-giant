@@ -16,4 +16,20 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+const gallery = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.md', base: './src/content/gallery' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    author: z.string().default('博主'),
+    category: z.string(),
+    location: z.string(),
+    cover: z.string(),
+    coverAlt: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = { posts, gallery };

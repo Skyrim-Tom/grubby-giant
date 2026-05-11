@@ -4,6 +4,7 @@ import { Hexagon } from 'lucide-vue-next';
 interface NavItem {
 	href: string;
 	text: string;
+	matchPrefix?: boolean;
 }
 
 const props = defineProps<{
@@ -12,16 +13,23 @@ const props = defineProps<{
 
 const navItems: NavItem[] = [
 	{ href: "/", text: "首页" },
-	{ href: "/posts", text: "文章" },
-	{ href: "/gallery", text: "相册" },
+	{ href: "/posts", text: "文章", matchPrefix: true },
+	{ href: "/gallery", text: "相册", matchPrefix: true },
 	{ href: "/about", text: "关于" },
 ];
 
-const isActive = (href: string): boolean => {
+const normalizePath = (path: string): string => {
+	if (path === '/') return path;
+	return path.replace(/\/$/, '');
+};
+
+const isActive = (item: NavItem): boolean => {
+	const currentPath = normalizePath(props.currentPath);
+	const href = normalizePath(item.href);
 	if (href === '/') {
-		return props.currentPath === '/';
+		return currentPath === '/';
 	}
-	return props.currentPath === href || props.currentPath.startsWith(href + '/');
+	return currentPath === href || Boolean(item.matchPrefix && currentPath.startsWith(href + '/'));
 };
 </script>
 
@@ -38,7 +46,8 @@ const isActive = (href: string): boolean => {
 					v-for="item in navItems" 
 					:key="item.href"
 					:href="item.href" 
-					:class="['nav-link', { active: isActive(item.href) }]"
+					:class="['nav-link', { active: isActive(item) }]"
+					:aria-current="isActive(item) ? 'page' : undefined"
 				>
 					{{ item.text }}
 				</a>

@@ -1,213 +1,155 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
 const title = "相册";
-const description = "我的摄影作品展示";
+const description = "摄影、旅行与生活片段";
 
-// CDN 基础路径 - 修改为你的 GitHub 用户名和仓库名
-const CDN_BASE = "https://cdn.jsdelivr.net/gh/yourname/blog-images@main/gallery";
+const albums = (await getCollection('gallery')).sort(
+	(a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
 
-const photos = [
-	{
-		id: 7,
-		title: "雨后彩虹",
-		description: "雨后天空里的彩虹，短暂而明亮的风景",
-		category: "自然",
-		location: "生活随拍",
-		date: "2026-05-11",
-		imageUrl: "https://image.momoc.cn/photos/rainbow.jpg",
-		thumbUrl: "https://image.momoc.cn/photos/rainbow.jpg"
-	},
-	{
-		id: 1,
-		title: "日落余晖",
-		description: "海边日落的美丽瞬间，金色的阳光洒在海面上",
-		category: "风景",
-		location: "厦门",
-		date: "2026-03-10",
-		imageUrl: `${CDN_BASE}/sunset-xiamen.jpg`,
-		thumbUrl: `${CDN_BASE}/sunset-xiamen-thumb.jpg`
-	},
-	{
-		id: 2,
-		title: "城市夜景",
-		description: "繁华都市的霓虹灯光，展现现代城市的魅力",
-		category: "城市",
-		location: "上海",
-		date: "2026-03-05",
-		imageUrl: `${CDN_BASE}/city-night-shanghai.jpg`,
-		thumbUrl: `${CDN_BASE}/city-night-shanghai-thumb.jpg`
-	},
-	{
-		id: 3,
-		title: "春日花开",
-		description: "樱花盛开的季节，粉色的花瓣随风飘落",
-		category: "自然",
-		location: "杭州",
-		date: "2026-03-01",
-		imageUrl: `${CDN_BASE}/spring-flowers-hangzhou.jpg`,
-		thumbUrl: `${CDN_BASE}/spring-flowers-hangzhou-thumb.jpg`
-	},
-	{
-		id: 4,
-		title: "街头人文",
-		description: "老街上的手艺人，专注地制作着传统工艺品",
-		category: "人文",
-		location: "成都",
-		date: "2026-02-28",
-		imageUrl: `${CDN_BASE}/street-culture-chengdu.jpg`,
-		thumbUrl: `${CDN_BASE}/street-culture-chengdu-thumb.jpg`
-	},
-	{
-		id: 5,
-		title: "山间晨雾",
-		description: "清晨的山间云雾缭绕，宛如仙境",
-		category: "风景",
-		location: "黄山",
-		date: "2026-02-20",
-		imageUrl: `${CDN_BASE}/mountain-mist-huangshan.jpg`,
-		thumbUrl: `${CDN_BASE}/mountain-mist-huangshan-thumb.jpg`
-	},
-	{
-		id: 6,
-		title: "古镇水乡",
-		description: "江南水乡的宁静与古朴，小桥流水人家",
-		category: "城市",
-		location: "乌镇",
-		date: "2026-02-15",
-		imageUrl: `${CDN_BASE}/ancient-town-wuzhen.jpg`,
-		thumbUrl: `${CDN_BASE}/ancient-town-wuzhen-thumb.jpg`
-	}
-];
+const categories = ["全部", ...new Set(albums.map((album) => album.data.category))];
+const locations = [...new Set(albums.map((album) => album.data.location))];
 
-const categories = ["全部", "风景", "城市", "自然", "人文"];
+function formatDate(date: Date) {
+	return new Date(date).toISOString().split('T')[0];
+}
 ---
 
 <Layout title={title} description={description}>
 	<div class="gallery-page">
-		<!-- Hero Header -->
-		<div class="gallery-hero">
+		<section class="gallery-hero">
 			<div class="hero-container">
-				<h1 class="hero-title">摄影作品</h1>
-				<p class="hero-desc">用镜头捕捉生活中的美好瞬间</p>
+				<h1 class="hero-title">相册</h1>
+				<p class="hero-desc">把照片整理成一篇篇可阅读的影像记录</p>
 				<div class="gallery-stats">
 					<div class="stat-item">
-						<span class="stat-value">{photos.length}</span>
-						<span class="stat-label">张作品</span>
+						<span class="stat-value">{albums.length}</span>
+						<span class="stat-label">组相册</span>
 					</div>
 					<div class="stat-divider"></div>
 					<div class="stat-item">
 						<span class="stat-value">{categories.length - 1}</span>
 						<span class="stat-label">个分类</span>
 					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Gallery Content -->
-		<div class="gallery-content">
-			<!-- Filter Bar -->
-			<div class="filter-bar">
-				<div class="filter-container">
-					<span class="filter-label">
-						<svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M4 6h16M4 12h16M4 18h7"/>
-						</svg>
-						筛选
-					</span>
-					<div class="filter-tabs">
-						{categories.map((category) => (
-							<button class={`filter-tab ${category === '全部' ? 'active' : ''}`} data-category={category}>
-								{category}
-							</button>
-						))}
+					<div class="stat-divider"></div>
+					<div class="stat-item">
+						<span class="stat-value">{locations.length}</span>
+						<span class="stat-label">个地点</span>
 					</div>
 				</div>
 			</div>
+		</section>
 
-			<!-- Photo Grid -->
-			<div class="photo-grid">
-				{photos.map((photo, index) => (
-					<div class="photo-card" data-category={photo.category} style={`animation-delay: ${index * 0.1}s`}>
-						<div class="photo-image">
-							<img 
-								src={photo.thumbUrl || photo.imageUrl} 
-								alt={photo.title}
-								class="photo-img"
-								loading="lazy"
-								onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-							/>
-							<div class="image-placeholder" style="display: none;">
-								<svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-									<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-									<circle cx="8.5" cy="8.5" r="1.5"/>
-									<polyline points="21 15 16 10 5 21"/>
-								</svg>
-							</div>
-							<div class="photo-overlay" data-full-image={photo.imageUrl}>
-								<div class="overlay-content">
-									<span class="photo-category">{photo.category}</span>
-									<button class="view-btn">
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-											<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-											<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-										</svg>
-										查看
-									</button>
-								</div>
-							</div>
-						</div>
-						<div class="photo-info">
-							<h3 class="photo-title">{photo.title}</h3>
-							<p class="photo-desc">{photo.description}</p>
-							<div class="photo-meta">
-								<span class="meta-item">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-										<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-									</svg>
-									{photo.location}
-								</span>
-								<span class="meta-item">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-										<line x1="16" y1="2" x2="16" y2="6"/>
-										<line x1="8" y1="2" x2="8" y2="6"/>
-										<line x1="3" y1="10" x2="21" y2="10"/>
-									</svg>
-									{photo.date}
-								</span>
-							</div>
-						</div>
-					</div>
+		<section class="gallery-content">
+			<div class="filter-bar" aria-label="相册分类">
+				{categories.map((category) => (
+					<button class={`filter-tab ${category === '全部' ? 'active' : ''}`} type="button" data-category={category}>
+						{category}
+					</button>
 				))}
 			</div>
-		</div>
+
+			<div class="album-grid" id="album-grid">
+				{albums.map((album, index) => (
+					<article class="album-card" data-category={album.data.category} style={`animation-delay: ${index * 0.06}s`}>
+						<a class="album-cover-link" href={`/gallery/${album.id}`} aria-label={`打开相册：${album.data.title}`}>
+							<img
+								class="album-cover"
+								src={album.data.cover}
+								alt={album.data.coverAlt || album.data.title}
+								loading={index < 3 ? 'eager' : 'lazy'}
+								onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+							/>
+							<div class="album-placeholder" style="display: none;">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+									<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+									<circle cx="8.5" cy="8.5" r="1.5"></circle>
+									<polyline points="21 15 16 10 5 21"></polyline>
+								</svg>
+							</div>
+						</a>
+						<div class="album-info">
+							<div class="album-meta">
+								<span class="album-category">{album.data.category}</span>
+								<span class="album-dot"></span>
+								<span>{album.data.location}</span>
+								<span class="album-dot"></span>
+								<time>{formatDate(album.data.pubDate)}</time>
+							</div>
+							<h2 class="album-title">
+								<a href={`/gallery/${album.id}`}>{album.data.title}</a>
+							</h2>
+							<p class="album-desc">{album.data.description}</p>
+							<div class="album-footer">
+								<div class="album-tags">
+									{album.data.tags.slice(0, 3).map((tag) => (
+										<span>{tag}</span>
+									))}
+								</div>
+								<a class="album-link" href={`/gallery/${album.id}`}>
+									查看相册
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+										<path d="M5 12h14M12 5l7 7-7 7"></path>
+									</svg>
+								</a>
+							</div>
+						</div>
+					</article>
+				))}
+			</div>
+
+			<div class="empty-state" id="empty-state" hidden>
+				<p>没有找到这个分类下的相册</p>
+				<button class="clear-filter" type="button">查看全部</button>
+			</div>
+		</section>
 	</div>
 </Layout>
 
 <script>
-	const filterTabs = document.querySelectorAll('.filter-tab');
-	const photoCards = document.querySelectorAll('.photo-card');
+	const initGalleryFilters = () => {
+		const page = document.querySelector('.gallery-page');
+		if (!page) return;
 
-	filterTabs.forEach((tab) => {
-		tab.addEventListener('click', () => {
-			filterTabs.forEach((t) => t.classList.remove('active'));
-			tab.classList.add('active');
+		const previousController = (page as HTMLElement).dataset.galleryFilterController;
+		if (previousController) {
+			window.dispatchEvent(new CustomEvent(`gallery-filter:dispose:${previousController}`));
+		}
 
-			const category = tab.getAttribute('data-category');
+		const controller = new AbortController();
+		const controllerId = crypto.randomUUID();
+		(page as HTMLElement).dataset.galleryFilterController = controllerId;
+		window.addEventListener(`gallery-filter:dispose:${controllerId}`, () => controller.abort(), { once: true });
 
-			photoCards.forEach((card) => {
-				const htmlCard = card as HTMLElement;
-				if (category === '全部' || card.getAttribute('data-category') === category) {
-					htmlCard.style.display = 'block';
-					htmlCard.style.animation = 'fadeInUp 0.5s ease forwards';
-				} else {
-					htmlCard.style.display = 'none';
-				}
+		const tabs = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
+		const cards = document.querySelectorAll<HTMLElement>('.album-card');
+		const emptyState = document.querySelector<HTMLElement>('#empty-state');
+		const clearFilter = document.querySelector<HTMLButtonElement>('.clear-filter');
+
+		const applyFilter = (category: string) => {
+			let visibleCount = 0;
+			tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.category === category));
+			cards.forEach((card) => {
+				const visible = category === '全部' || card.dataset.category === category;
+				card.hidden = !visible;
+				if (visible) visibleCount += 1;
 			});
+			if (emptyState) emptyState.hidden = visibleCount > 0;
+		};
+
+		tabs.forEach((tab) => {
+			tab.addEventListener('click', () => applyFilter(tab.dataset.category || '全部'), { signal: controller.signal });
 		});
-	});
+		clearFilter?.addEventListener('click', () => applyFilter('全部'), { signal: controller.signal });
+	};
+
+	initGalleryFilters();
+	if (!(window as Window & { __galleryFilterListener?: boolean }).__galleryFilterListener) {
+		document.addEventListener('astro:page-load', initGalleryFilters);
+		(window as Window & { __galleryFilterListener?: boolean }).__galleryFilterListener = true;
+	}
 </script>
 
 <style>
@@ -215,7 +157,6 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 		min-height: calc(100vh - var(--header-height));
 	}
 
-	/* Hero */
 	.gallery-hero {
 		background: linear-gradient(180deg, var(--vp-c-bg-alt) 0%, var(--vp-c-bg) 100%);
 		padding: 48px 24px 32px;
@@ -225,7 +166,6 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 	.hero-container {
 		max-width: 1200px;
 		margin: 0 auto;
-		text-align: center;
 	}
 
 	.hero-title {
@@ -233,7 +173,7 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 		font-weight: 700;
 		color: var(--vp-c-text-1);
 		margin-bottom: 8px;
-		letter-spacing: -0.02em;
+		letter-spacing: 0;
 	}
 
 	.hero-desc {
@@ -245,8 +185,8 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 	.gallery-stats {
 		display: flex;
 		align-items: center;
-		justify-content: center;
 		gap: 16px;
+		flex-wrap: wrap;
 	}
 
 	.stat-item {
@@ -272,43 +212,17 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 		background: var(--vp-c-divider);
 	}
 
-	/* Gallery Content */
 	.gallery-content {
 		max-width: 1200px;
 		margin: 0 auto;
 		padding: 32px 24px 64px;
 	}
 
-	/* Filter Bar */
 	.filter-bar {
-		margin-bottom: 32px;
-	}
-
-	.filter-container {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		flex-wrap: wrap;
-	}
-
-	.filter-label {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: var(--vp-c-text-2);
-	}
-
-	.filter-icon {
-		width: 16px;
-		height: 16px;
-	}
-
-	.filter-tabs {
 		display: flex;
 		gap: 8px;
 		flex-wrap: wrap;
+		margin-bottom: 28px;
 	}
 
 	.filter-tab {
@@ -322,9 +236,11 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 		transition: all 0.2s;
 	}
 
-	.filter-tab:hover {
+	.filter-tab:hover,
+	.filter-tab:focus-visible {
 		border-color: var(--vp-c-brand-1);
 		color: var(--vp-c-brand-1);
+		outline: none;
 	}
 
 	.filter-tab.active {
@@ -333,33 +249,32 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 		color: white;
 	}
 
-	/* Photo Grid */
-	.photo-grid {
+	.album-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 24px;
 	}
 
-	.photo-card {
+	.album-card {
 		background: var(--vp-c-bg-elv);
 		border: 1px solid var(--vp-c-divider);
-		border-radius: 12px;
+		border-radius: 8px;
 		overflow: hidden;
-		transition: all 0.3s ease;
-		animation: fadeInUp 0.5s ease forwards;
+		transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+		animation: fadeInUp 0.45s ease forwards;
 		opacity: 0;
 	}
 
-	.photo-card:hover {
+	.album-card:hover {
 		border-color: var(--vp-c-brand-1);
 		box-shadow: var(--vp-shadow-2);
-		transform: translateY(-4px);
+		transform: translateY(-3px);
 	}
 
 	@keyframes fadeInUp {
 		from {
 			opacity: 0;
-			transform: translateY(20px);
+			transform: translateY(16px);
 		}
 		to {
 			opacity: 1;
@@ -367,140 +282,157 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 		}
 	}
 
-	.photo-image {
+	.album-cover-link {
 		position: relative;
-		aspect-ratio: 4/3;
+		display: block;
+		aspect-ratio: 4 / 3;
 		overflow: hidden;
 		background: var(--vp-c-bg-soft);
 	}
 
-	.photo-img {
+	.album-cover {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 0.5s ease;
+		transition: transform 0.45s ease;
 	}
 
-	.photo-card:hover .photo-img {
-		transform: scale(1.05);
+	.album-card:hover .album-cover {
+		transform: scale(1.04);
 	}
 
-	.image-placeholder {
+	.album-placeholder {
 		width: 100%;
 		height: 100%;
-		display: flex;
 		align-items: center;
 		justify-content: center;
 		background: linear-gradient(135deg, var(--vp-c-brand-soft) 0%, var(--vp-c-bg-soft) 100%);
 	}
 
-	.placeholder-icon {
+	.album-placeholder svg {
 		width: 48px;
 		height: 48px;
 		color: var(--vp-c-brand-1);
-		opacity: 0.5;
+		opacity: 0.55;
 	}
 
-	.photo-overlay {
-		position: absolute;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.6);
-		opacity: 0;
-		transition: opacity 0.3s;
+	.album-info {
+		padding: 18px;
+	}
+
+	.album-meta {
 		display: flex;
 		align-items: center;
-		justify-content: center;
+		gap: 8px;
+		flex-wrap: wrap;
+		margin-bottom: 10px;
+		color: var(--vp-c-text-3);
+		font-size: 0.8125rem;
 	}
 
-	.photo-card:hover .photo-overlay {
-		opacity: 1;
-	}
-
-	.overlay-content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.photo-category {
-		padding: 4px 12px;
-		background: var(--vp-c-brand-1);
-		color: white;
-		border-radius: 4px;
-		font-size: 0.75rem;
-		font-weight: 500;
-	}
-
-	.view-btn {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		padding: 10px 20px;
-		background: white;
-		border: none;
-		border-radius: 6px;
-		color: var(--vp-c-text-1);
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.view-btn:hover {
-		background: var(--vp-c-brand-1);
-		color: white;
-	}
-
-	.view-btn svg {
-		width: 16px;
-		height: 16px;
-	}
-
-	.photo-info {
-		padding: 20px;
-	}
-
-	.photo-title {
-		font-size: 1.125rem;
+	.album-category {
+		color: var(--vp-c-brand-1);
 		font-weight: 600;
-		color: var(--vp-c-text-1);
-		margin-bottom: 8px;
 	}
 
-	.photo-desc {
-		font-size: 0.875rem;
-		color: var(--vp-c-text-2);
-		line-height: 1.6;
+	.album-dot {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--vp-c-text-3);
+	}
+
+	.album-title {
+		margin-bottom: 10px;
+		font-size: 1.125rem;
+		line-height: 1.4;
+	}
+
+	.album-title a {
+		color: var(--vp-c-text-1);
+		text-decoration: none;
+	}
+
+	.album-title a:hover {
+		color: var(--vp-c-brand-1);
+	}
+
+	.album-desc {
 		margin-bottom: 16px;
+		color: var(--vp-c-text-2);
+		font-size: 0.875rem;
+		line-height: 1.65;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
 
-	.photo-meta {
+	.album-footer {
 		display: flex;
-		gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.album-tags {
+		display: flex;
+		gap: 6px;
 		flex-wrap: wrap;
 	}
 
-	.meta-item {
-		display: flex;
+	.album-tags span {
+		padding: 3px 8px;
+		border-radius: 4px;
+		background: var(--vp-c-bg-soft);
+		color: var(--vp-c-text-2);
+		font-size: 0.75rem;
+	}
+
+	.album-link {
+		display: inline-flex;
 		align-items: center;
 		gap: 4px;
-		font-size: 0.8125rem;
-		color: var(--vp-c-text-3);
+		color: var(--vp-c-brand-1);
+		text-decoration: none;
+		font-size: 0.875rem;
+		font-weight: 500;
+		white-space: nowrap;
 	}
 
-	.meta-item svg {
-		width: 14px;
-		height: 14px;
+	.album-link svg {
+		width: 16px;
+		height: 16px;
+		transition: transform 0.2s;
 	}
 
-	/* Responsive */
+	.album-link:hover svg {
+		transform: translateX(3px);
+	}
+
+	.empty-state {
+		padding: 48px 20px;
+		text-align: center;
+		color: var(--vp-c-text-2);
+	}
+
+	.clear-filter {
+		margin-top: 16px;
+		padding: 8px 18px;
+		border: 1px solid var(--vp-c-divider);
+		border-radius: 6px;
+		background: var(--vp-c-bg-elv);
+		color: var(--vp-c-text-2);
+		cursor: pointer;
+	}
+
+	.clear-filter:hover {
+		border-color: var(--vp-c-brand-1);
+		color: var(--vp-c-brand-1);
+	}
+
 	@media (max-width: 1024px) {
-		.photo-grid {
+		.album-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
@@ -518,13 +450,13 @@ const categories = ["全部", "风景", "城市", "自然", "人文"];
 			padding: 24px 16px 48px;
 		}
 
-		.filter-container {
-			flex-direction: column;
-			align-items: flex-start;
+		.album-grid {
+			grid-template-columns: 1fr;
 		}
 
-		.photo-grid {
-			grid-template-columns: 1fr;
+		.album-footer {
+			align-items: flex-start;
+			flex-direction: column;
 		}
 	}
 </style>

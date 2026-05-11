@@ -1,0 +1,151 @@
+<script>
+	const initMarkdownImageZoom = () => {
+		const images = document.querySelectorAll('.article-body img:not([data-no-zoom])');
+		if (!images.length) return;
+
+		let dialog = document.querySelector('#markdown-image-zoom');
+		if (!dialog) {
+			dialog = document.createElement('dialog');
+			dialog.id = 'markdown-image-zoom';
+			dialog.className = 'markdown-image-zoom';
+			dialog.innerHTML = `
+				<button class="markdown-image-zoom-close" type="button" aria-label="关闭大图">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+						<path d="M18 6L6 18"></path>
+						<path d="M6 6l12 12"></path>
+					</svg>
+				</button>
+				<figure class="markdown-image-zoom-frame">
+					<img class="markdown-image-zoom-img" src="" alt="">
+					<figcaption class="markdown-image-zoom-caption"></figcaption>
+				</figure>
+			`;
+			document.body.append(dialog);
+		}
+
+		const zoomImage = dialog.querySelector('.markdown-image-zoom-img');
+		const caption = dialog.querySelector('.markdown-image-zoom-caption');
+		const closeButton = dialog.querySelector('.markdown-image-zoom-close');
+
+		const closeZoom = () => {
+			if (!dialog.open) return;
+			dialog.close();
+			zoomImage.removeAttribute('src');
+			zoomImage.alt = '';
+			caption.textContent = '';
+		};
+
+		if (!dialog.dataset.zoomDialogReady) {
+			dialog.dataset.zoomDialogReady = 'true';
+			closeButton.addEventListener('click', closeZoom);
+			dialog.addEventListener('click', (event) => {
+				if (event.target === dialog) closeZoom();
+			});
+		}
+
+		images.forEach((image) => {
+			if (image.dataset.zoomReady) return;
+			image.dataset.zoomReady = 'true';
+			image.tabIndex = 0;
+			image.setAttribute('role', 'button');
+			image.setAttribute('aria-label', `查看大图：${image.alt || '图片'}`);
+			image.addEventListener('click', () => {
+				zoomImage.src = image.currentSrc || image.src;
+				zoomImage.alt = image.alt || '';
+				caption.textContent = image.alt || '';
+				dialog.showModal();
+			});
+			image.addEventListener('keydown', (event) => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					image.click();
+				}
+			});
+		});
+	};
+
+	initMarkdownImageZoom();
+	if (!window.__markdownImageZoomPageLoadListener) {
+		document.addEventListener('astro:page-load', initMarkdownImageZoom);
+		window.__markdownImageZoomPageLoadListener = true;
+	}
+</script>
+
+<style is:global>
+	.article-body img:not([data-no-zoom]) {
+		cursor: zoom-in;
+	}
+
+	.article-body img:not([data-no-zoom]):focus-visible {
+		outline: 2px solid var(--vp-c-brand-1);
+		outline-offset: 4px;
+	}
+
+	.markdown-image-zoom {
+		width: min(1120px, calc(100vw - 32px));
+		max-height: calc(100vh - 32px);
+		padding: 0;
+		border: 0;
+		border-radius: 8px;
+		background: #0f1115;
+		color: white;
+		box-shadow: var(--vp-shadow-3);
+		overflow: hidden;
+	}
+
+	.markdown-image-zoom::backdrop {
+		background: rgba(0, 0, 0, 0.82);
+		backdrop-filter: blur(6px);
+	}
+
+	.markdown-image-zoom-close {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		z-index: 2;
+		width: 40px;
+		height: 40px;
+		border: 1px solid rgba(255, 255, 255, 0.24);
+		border-radius: 6px;
+		background: rgba(0, 0, 0, 0.5);
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	.markdown-image-zoom-close:hover,
+	.markdown-image-zoom-close:focus-visible {
+		background: rgba(0, 0, 0, 0.75);
+		outline: none;
+	}
+
+	.markdown-image-zoom-close svg {
+		width: 22px;
+		height: 22px;
+	}
+
+	.markdown-image-zoom-frame {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.markdown-image-zoom-img {
+		display: block;
+		width: 100%;
+		max-height: min(82vh, 820px);
+		object-fit: contain;
+	}
+
+	.markdown-image-zoom-caption {
+		width: 100%;
+		min-height: 44px;
+		padding: 12px 20px;
+		color: rgba(255, 255, 255, 0.78);
+		font-size: 0.875rem;
+		text-align: center;
+	}
+</style>
