@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Post {
 	id: string;
@@ -11,8 +11,15 @@ interface Post {
 
 const props = defineProps<{
 	posts: Post[];
-	currentPostId: string;
 }>();
+
+const currentPath = ref('');
+
+const updateCurrentPath = () => {
+	currentPath.value = window.location.pathname.replace(/\/$/, '');
+};
+
+const isCurrentPost = (postId: string) => currentPath.value === `/posts/${postId}`;
 
 // 按分类分组
 const groupedPosts = computed(() => {
@@ -27,6 +34,15 @@ const groupedPosts = computed(() => {
 
 // 分类顺序（按第一篇出现顺序）
 const categories = computed(() => Object.keys(groupedPosts.value));
+
+onMounted(() => {
+	updateCurrentPath();
+	document.addEventListener('astro:page-load', updateCurrentPath);
+});
+
+onUnmounted(() => {
+	document.removeEventListener('astro:page-load', updateCurrentPath);
+});
 </script>
 
 <template>
@@ -42,7 +58,7 @@ const categories = computed(() => Object.keys(groupedPosts.value));
 					v-for="post in groupedPosts[cat]"
 					:key="post.id"
 					:href="`/posts/${post.id}`"
-					:class="['article-nav-item', { active: post.id === currentPostId }]"
+					:class="['article-nav-item', { active: isCurrentPost(post.id) }]"
 				>
 					{{ post.data.title }}
 				</a>

@@ -35,7 +35,7 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 <Layout title={post.data.title} description={post.data.description}>
 	<div class="post-page">
 		<!-- Article Header -->
-		<div class="article-hero">
+		<div class="article-hero" transition:name="article-hero">
 			<div class="hero-container">
 				<div class="article-meta">
 					<span class="meta-category">{post.data.category}</span>
@@ -54,14 +54,14 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 		</div>
 
 		<!-- Article Layout with Sidebar -->
-		<div class="article-layout">
+		<div class="article-layout" transition:animate="none">
 			<!-- Left Sidebar: Article List -->
-			<aside class="sidebar-left">
-				<ArticleList posts={sortedPosts} currentPostId={post.id} client:load />
+			<aside class="sidebar-left" transition:persist="post-navigation">
+				<ArticleList posts={sortedPosts} client:load />
 			</aside>
 
 			<!-- Main Content -->
-			<main class="article-main">
+			<main class="article-main" transition:name="article-main">
 				<article class="article-content">
 					<div class="article-body" id="article-content">
 						<Content />
@@ -80,7 +80,7 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 			</main>
 
 			<!-- Right Sidebar: Table of Contents -->
-			<aside class="sidebar-right">
+			<aside class="sidebar-right" transition:name="article-toc">
 				<TableOfContents headings={toc} client:load />
 			</aside>
 		</div>

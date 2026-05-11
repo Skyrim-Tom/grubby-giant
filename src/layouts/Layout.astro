@@ -1,6 +1,7 @@
 ---
 import NavBar from '../components/NavBar.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
 	title?: string;
@@ -21,23 +22,30 @@ const currentPath = Astro.url.pathname;
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<title>{title}</title>
+		<ClientRouter fallback="swap" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
 		<!-- 主题初始化脚本 - 在页面渲染前执行，防止闪烁 -->
 		<script is:inline>
-			(function() {
+			window.applyTheme = function() {
 				const savedTheme = localStorage.getItem('theme');
 				const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 				const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
 				document.documentElement.setAttribute('data-theme', theme);
-			})();
+			};
+
+			window.applyTheme();
+			if (!window.__themeAfterSwapListener) {
+				document.addEventListener('astro:after-swap', () => window.applyTheme());
+				window.__themeAfterSwapListener = true;
+			}
 		</script>
 	</head>
 	<body>
 		<div class="layout">
 			<!-- Vue 导航组件 -->
-			<NavBar currentPath={currentPath} client:load>
+			<NavBar currentPath={currentPath} client:load transition:persist="site-header">
 				<ThemeToggle slot="actions" client:load />
 			</NavBar>
 
