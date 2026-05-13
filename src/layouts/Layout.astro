@@ -1,6 +1,7 @@
 ---
 import NavBar from '../components/NavBar.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import GeometricBackground from '../components/GeometricBackground.astro';
 import { ClientRouter } from 'astro:transitions';
 
 interface Props {
@@ -42,6 +43,7 @@ const currentPath = Astro.url.pathname;
 		</script>
 	</head>
 	<body>
+		<GeometricBackground />
 		<div class="layout">
 			<NavBar currentPath={currentPath} client:load transition:persist="site-header">
 				<ThemeToggle slot="actions" client:load />
@@ -200,6 +202,8 @@ const currentPath = Astro.url.pathname;
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
+		position: relative;
+		z-index: 1;
 	}
 
 	.main {
