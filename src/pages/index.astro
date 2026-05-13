@@ -12,12 +12,11 @@ const latestPosts = allPosts
 	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
 	.slice(0, 3);
 
-const featuredPhotos = [
-	{ id: 1, title: "日落余晖", category: "风景" },
-	{ id: 2, title: "城市夜景", category: "城市" },
-	{ id: 3, title: "春日花开", category: "自然" },
-	{ id: 4, title: "街头人文", category: "人文" }
-];
+// 获取最新相册
+const allAlbums = await getCollection('gallery');
+const latestAlbums = allAlbums
+	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+	.slice(0, 4);
 ---
 
 <Layout title={title} description={description}>
@@ -88,18 +87,27 @@ const featuredPhotos = [
 					</a>
 				</div>
 				<div class="gallery-grid">
-					{featuredPhotos.map((photo, index) => (
-						<div class={`gallery-item ${index === 0 ? 'gallery-item-large' : ''}`}>
+					{latestAlbums.map((album, index) => (
+						<a class={`gallery-item ${index === 0 ? 'gallery-item-large' : ''}`} href={`/gallery/${album.id}`}>
 							<div class="gallery-image">
-								<div class="image-placeholder">
+								<img
+									src={album.data.cover}
+									alt={album.data.coverAlt || album.data.title}
+									loading="lazy"
+									onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+								/>
+								<div class="image-placeholder" style="display:none;">
 									<span class="placeholder-icon">◆</span>
 								</div>
 								<div class="gallery-overlay">
-									<span class="gallery-category">{photo.category}</span>
+									<span class="gallery-meta">
+										<span class="gallery-category">{album.data.category}</span>
+										<span class="gallery-location">{album.data.location}</span>
+									</span>
 								</div>
 							</div>
-							<h4 class="gallery-title">{photo.title}</h4>
-						</div>
+							<h4 class="gallery-title">{album.data.title}</h4>
+						</a>
 					))}
 				</div>
 			</div>
@@ -396,6 +404,8 @@ const featuredPhotos = [
 
 	.gallery-item {
 		position: relative;
+		text-decoration: none;
+		display: block;
 	}
 
 	.gallery-item-large {
@@ -413,12 +423,26 @@ const featuredPhotos = [
 
 	.gallery-item-large .gallery-image {
 		aspect-ratio: auto;
+		height: calc(100% - 40px);
+		min-height: 200px;
+	}
+
+	.gallery-image img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
 		height: 100%;
+		object-fit: cover;
+		transition: transform 0.4s ease;
+	}
+
+	.gallery-item:hover .gallery-image img {
+		transform: scale(1.05);
 	}
 
 	.image-placeholder {
-		width: 100%;
-		height: 100%;
+		position: absolute;
+		inset: 0;
 		background: linear-gradient(135deg, var(--vp-c-brand-soft) 0%, var(--vp-c-bg-soft) 100%);
 		display: flex;
 		align-items: center;
@@ -434,32 +458,49 @@ const featuredPhotos = [
 	.gallery-overlay {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+		background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);
 		opacity: 0;
-		transition: opacity 0.2s;
+		transition: opacity 0.25s;
 		display: flex;
 		align-items: flex-end;
-		padding: 16px;
+		padding: 14px 16px;
 	}
 
 	.gallery-item:hover .gallery-overlay {
 		opacity: 1;
 	}
 
+	.gallery-meta {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
 	.gallery-category {
 		color: white;
 		font-size: 0.75rem;
-		font-weight: 500;
-		padding: 4px 10px;
+		font-weight: 600;
+		padding: 3px 9px;
 		background: var(--vp-c-brand-1);
 		border-radius: 4px;
 	}
 
+	.gallery-location {
+		color: rgba(255, 255, 255, 0.88);
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+
 	.gallery-title {
-		margin-top: 12px;
+		margin-top: 10px;
 		font-size: 0.9375rem;
 		font-weight: 500;
 		color: var(--vp-c-text-1);
+		transition: color 0.2s;
+	}
+
+	.gallery-item:hover .gallery-title {
+		color: var(--vp-c-brand-1);
 	}
 
 	/* CTA Card */
