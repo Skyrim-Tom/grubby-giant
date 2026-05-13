@@ -11,7 +11,12 @@ const posts = allPosts.sort((a, b) =>
 	new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
 );
 
-const categories = ["全部", ...new Set(posts.map(post => post.data.category))];
+const categories = [...new Set(posts.map(post => post.data.category))];
+const allTags = [...new Set(posts.flatMap(post => post.data.tags as string[]))];
+
+const postCount = posts.length;
+const categoryCount = categories.length;
+const tagCount = allTags.length;
 
 function formatDate(date: Date) {
 	return new Date(date).toISOString().split('T')[0];
@@ -29,73 +34,142 @@ function formatDate(date: Date) {
 				<span>ARTICLES</span>
 			</div>
 			<h1 class="page-title">文章列表</h1>
-			<p class="page-desc">{posts.length} 篇文章，记录技术探索与生活点滴</p>
+			<p class="page-desc">记录技术探索与生活点滴</p>
+			<div class="page-stats">
+				<div class="stat-item">
+					<span class="stat-value">{postCount}</span>
+					<span class="stat-label">篇文章</span>
+				</div>
+				<div class="stat-divider"></div>
+				<div class="stat-item">
+					<span class="stat-value">{categoryCount}</span>
+					<span class="stat-label">个分类</span>
+				</div>
+				<div class="stat-divider"></div>
+				<div class="stat-item">
+					<span class="stat-value">{tagCount}</span>
+					<span class="stat-label">个标签</span>
+				</div>
+			</div>
 		</div>
 	</div>
 
-	<!-- ══ 文章内容区 ══ -->
+	<!-- ══ 文章内容区（左右布局）══ -->
 	<div class="posts-content">
 
-		<!-- 分类筛选栏 -->
-		<div class="filter-bar">
-			{categories.map((category) => (
-				<button
-					class={`filter-btn ${category === '全部' ? 'active' : ''}`}
-					data-category={category}
-					onclick={`filterByCategory('${category}')`}
-				>
-					{category}
+		<!-- 左侧：分类与标签侧边栏 -->
+		<aside class="posts-sidebar">
+
+			<!-- 分类 -->
+			<div class="sidebar-section">
+				<div class="sidebar-section-label">分类</div>
+				<div class="sidebar-filters">
+					<button
+						class="sidebar-btn active"
+						data-type="category"
+						data-value="全部"
+					>
+						<span class="sidebar-btn-dot"></span>
+						全部
+						<span class="sidebar-btn-count">{postCount}</span>
+					</button>
+					{categories.map((category) => (
+						<button
+							class="sidebar-btn"
+							data-type="category"
+							data-value={category}
+						>
+							<span class="sidebar-btn-dot"></span>
+							{category}
+							<span class="sidebar-btn-count">
+								{posts.filter(p => p.data.category === category).length}
+							</span>
+						</button>
+					))}
+				</div>
+			</div>
+
+			<!-- 标签 -->
+			<div class="sidebar-section">
+				<div class="sidebar-section-label">标签</div>
+				<div class="sidebar-tags">
+					{allTags.map((tag) => (
+						<button
+							class="sidebar-tag-btn"
+							data-type="tag"
+							data-value={tag}
+						>
+							{tag}
+						</button>
+					))}
+				</div>
+			</div>
+
+		</aside>
+
+		<!-- 右侧：文章列表 -->
+		<div class="posts-main">
+
+			<!-- 当前筛选提示 -->
+			<div class="filter-status" id="filter-status" style="display: none;">
+				<span class="filter-status-text" id="filter-status-text"></span>
+				<button class="filter-clear-btn" id="filter-clear-btn">
+					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+						<path d="M18 6L6 18M6 6l12 12"/>
+					</svg>
+					清除筛选
 				</button>
-			))}
-		</div>
+			</div>
 
-		<!-- 文章列表 -->
-		<div class="posts-list" id="posts-list">
-			{posts.map((post, index) => (
-				<article
-					class="post-item"
-					data-category={post.data.category}
-				>
-					<div class="post-meta-row">
-						<span class="post-category-badge">{post.data.category}</span>
-						<span class="post-dot" aria-hidden="true"></span>
-						<time class="post-date">{formatDate(post.data.pubDate)}</time>
-						<span class="post-dot" aria-hidden="true"></span>
-						<span class="post-readtime">{post.data.readTime}阅读</span>
-					</div>
-					<h2 class="post-title">
-						<a href={`/posts/${post.id}`}>
-							<span class="post-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-							{post.data.title}
-						</a>
-					</h2>
-					<p class="post-excerpt">{post.data.description}</p>
-					<div class="post-footer">
-						<div class="post-tags">
-							{post.data.tags.slice(0, 3).map((tag: string) => (
-								<span class="post-tag">{tag}</span>
-							))}
+			<!-- 文章列表 -->
+			<div class="posts-list" id="posts-list">
+				{posts.map((post, index) => (
+					<article
+						class="post-item"
+						data-category={post.data.category}
+						data-tags={post.data.tags.join(',')}
+					>
+						<div class="post-meta-row">
+							<span class="post-category-badge">{post.data.category}</span>
+							<span class="post-dot" aria-hidden="true"></span>
+							<time class="post-date">{formatDate(post.data.pubDate)}</time>
+							<span class="post-dot" aria-hidden="true"></span>
+							<span class="post-readtime">{post.data.readTime}阅读</span>
 						</div>
-						<a href={`/posts/${post.id}`} class="read-more">
-							阅读文章
-							<svg class="arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-								<path d="M5 12h14M12 5l7 7-7 7"/>
-							</svg>
-						</a>
-					</div>
-				</article>
-			))}
-		</div>
+						<h2 class="post-title">
+							<a href={`/posts/${post.id}`}>
+								<span class="post-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+								{post.data.title}
+							</a>
+						</h2>
+						<p class="post-excerpt">{post.data.description}</p>
+						<div class="post-footer">
+							<div class="post-tags">
+								{post.data.tags.slice(0, 3).map((tag: string) => (
+									<span class="post-tag">{tag}</span>
+								))}
+							</div>
+							<a href={`/posts/${post.id}`} class="read-more">
+								阅读文章
+								<svg class="arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+									<path d="M5 12h14M12 5l7 7-7 7"/>
+								</svg>
+							</a>
+						</div>
+					</article>
+				))}
+			</div>
 
-		<!-- 空状态 -->
-		<div class="no-posts" id="no-posts" style="display: none;">
-			<svg class="no-posts-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-				<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-			</svg>
-			<p>没有找到相关文章</p>
-			<button class="clear-filter-btn" onclick="clearFilter()">清除筛选</button>
-		</div>
+			<!-- 空状态 -->
+			<div class="no-posts" id="no-posts" style="display: none;">
+				<svg class="no-posts-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+					<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+				</svg>
+				<p>没有找到相关文章</p>
+				<button class="clear-filter-btn" id="no-posts-clear-btn">清除筛选</button>
+			</div>
 
+		</div>
 	</div>
 </div>
 </Layout>
@@ -113,7 +187,7 @@ function formatDate(date: Date) {
 }
 
 .page-header-inner {
-	max-width: 800px;
+	max-width: 1200px;
 	margin: 0 auto;
 }
 
@@ -147,46 +221,218 @@ function formatDate(date: Date) {
 	font-size: 1rem;
 	color: var(--c-body);
 	line-height: 1.7;
+	margin-bottom: 24px;
 }
 
-/* ══ 内容区 ══ */
+/* ══ 统计数字（与相册保持一致）══ */
+.page-stats {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.stat-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.stat-value {
+	font-family: var(--font-display);
+	font-size: 1.25rem;
+	font-weight: 500;
+	color: var(--c-primary);
+	letter-spacing: -0.02em;
+}
+
+.stat-label {
+	font-size: 0.875rem;
+	color: var(--c-muted);
+}
+
+.stat-divider {
+	width: 1px;
+	height: 14px;
+	background: var(--c-hairline);
+}
+
+/* ══ 内容区（左右布局）══ */
 .posts-content {
-	max-width: 800px;
+	max-width: 1200px;
 	margin: 0 auto;
 	padding: 40px 24px 80px;
+	display: flex;
+	gap: 56px;
+	align-items: flex-start;
 }
 
-/* ══ 分类筛选栏 ══ */
-.filter-bar {
+/* ══ 左侧侧边栏 ══ */
+.posts-sidebar {
+	width: 200px;
+	flex-shrink: 0;
+	position: sticky;
+	top: calc(var(--header-height) + 32px);
+	max-height: calc(100vh - var(--header-height) - 64px);
+	overflow-y: auto;
+	scrollbar-width: none;
+}
+
+.posts-sidebar::-webkit-scrollbar {
+	display: none;
+}
+
+.sidebar-section {
+	margin-bottom: 28px;
+}
+
+.sidebar-section-label {
+	font-size: 0.6875rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: var(--c-muted);
+	margin-bottom: 10px;
+	padding: 0 4px;
+}
+
+/* 分类按钮 */
+.sidebar-filters {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.sidebar-btn {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	text-align: left;
+	padding: 7px 10px;
+	background: transparent;
+	border: none;
+	border-radius: 7px;
+	font-family: var(--font-body);
+	font-size: 0.875rem;
+	font-weight: 400;
+	color: var(--c-muted);
+	cursor: pointer;
+	transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-btn:hover {
+	background: var(--c-surface-card);
+	color: var(--c-ink);
+}
+
+.sidebar-btn.active {
+	background: var(--c-surface-card);
+	color: var(--c-primary);
+	font-weight: 500;
+}
+
+.sidebar-btn-dot {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--c-hairline);
+	flex-shrink: 0;
+	transition: background 0.15s;
+}
+
+.sidebar-btn.active .sidebar-btn-dot {
+	background: var(--c-primary);
+}
+
+.sidebar-btn-count {
+	margin-left: auto;
+	font-size: 0.75rem;
+	color: var(--c-muted-soft);
+	font-weight: 400;
+}
+
+.sidebar-btn.active .sidebar-btn-count {
+	color: var(--c-primary);
+	opacity: 0.7;
+}
+
+/* 标签云 */
+.sidebar-tags {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 6px;
-	margin-bottom: 40px;
+	padding: 0 2px;
 }
 
-.filter-btn {
-	padding: 5px 14px;
+.sidebar-tag-btn {
+	padding: 4px 10px;
 	border: 1px solid var(--c-hairline);
 	background: transparent;
 	color: var(--c-muted);
 	font-family: var(--font-body);
-	font-size: 0.875rem;
-	font-weight: 500;
+	font-size: 0.8rem;
+	font-weight: 400;
 	border-radius: 9999px;
 	cursor: pointer;
 	transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.filter-btn:hover {
+.sidebar-tag-btn:hover {
 	background: var(--c-surface-card);
 	color: var(--c-ink);
 	border-color: var(--c-hairline-soft);
 }
 
-.filter-btn.active {
+.sidebar-tag-btn.active {
 	background: var(--c-primary);
 	color: #fff;
 	border-color: var(--c-primary);
+}
+
+/* ══ 右侧主内容 ══ */
+.posts-main {
+	flex: 1;
+	min-width: 0;
+}
+
+/* 筛选状态提示条 */
+.filter-status {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 24px;
+	padding: 10px 14px;
+	background: var(--c-surface-card);
+	border-radius: 8px;
+}
+
+.filter-status-text {
+	font-size: 0.875rem;
+	color: var(--c-body);
+	flex: 1;
+}
+
+.filter-clear-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 10px;
+	background: transparent;
+	border: 1px solid var(--c-hairline);
+	border-radius: 6px;
+	font-family: var(--font-body);
+	font-size: 0.8125rem;
+	color: var(--c-muted);
+	cursor: pointer;
+	transition: background 0.15s, color 0.15s;
+	white-space: nowrap;
+}
+
+.filter-clear-btn:hover {
+	background: var(--c-surface-dark);
+	color: var(--c-on-dark);
+	border-color: transparent;
 }
 
 /* ══ 文章列表 ══ */
@@ -256,16 +502,18 @@ function formatDate(date: Date) {
 }
 
 .post-number {
-	font-family: var(--font-mono);
-	font-size: 0.875rem;
+	font-family: var(--font-display);
+	font-size: 1rem;
 	font-weight: 400;
 	color: var(--c-muted);
 	flex-shrink: 0;
 	line-height: 1;
+	opacity: 0.5;
 }
 
 .post-title a:hover .post-number {
 	color: var(--c-primary);
+	opacity: 1;
 }
 
 .post-excerpt {
@@ -351,6 +599,41 @@ function formatDate(date: Date) {
 }
 
 /* ══ 响应式 ══ */
+@media (max-width: 900px) {
+	.posts-content {
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.posts-sidebar {
+		width: 100%;
+		position: static;
+		max-height: none;
+		border-bottom: 1px solid var(--c-hairline-soft);
+		padding-bottom: 24px;
+		margin-bottom: 32px;
+	}
+
+	.sidebar-section {
+		margin-bottom: 20px;
+	}
+
+	.sidebar-filters {
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.sidebar-btn {
+		width: auto;
+		padding: 5px 12px;
+	}
+
+	.sidebar-btn-count {
+		display: none;
+	}
+}
+
 @media (max-width: 768px) {
 	.page-header {
 		padding: 48px 16px 32px;
@@ -376,44 +659,71 @@ function formatDate(date: Date) {
 </style>
 
 <script is:inline>
-	let activeCategory = '全部';
+	let activeType = 'category';
+	let activeValue = '全部';
 
-	function filterByCategory(category) {
-		activeCategory = category;
+	function applyFilter(type, value) {
+		activeType = type;
+		activeValue = value;
 		updateUI();
 	}
 
 	function clearFilter() {
-		activeCategory = '全部';
+		activeType = 'category';
+		activeValue = '全部';
 		updateUI();
 	}
 
 	function updateUI() {
-		const posts        = document.querySelectorAll('.post-item');
-		const filterBtns   = document.querySelectorAll('.filter-btn');
-		const noPosts      = document.getElementById('no-posts');
-		const postsList    = document.getElementById('posts-list');
+		const postEls       = document.querySelectorAll('.post-item');
+		const categoryBtns  = document.querySelectorAll('.sidebar-btn');
+		const tagBtns       = document.querySelectorAll('.sidebar-tag-btn');
+		const noPostsEl     = document.getElementById('no-posts');
+		const postsListEl   = document.getElementById('posts-list');
+		const filterStatus  = document.getElementById('filter-status');
+		const filterText    = document.getElementById('filter-status-text');
 
-		// 更新按钮激活态
-		filterBtns.forEach(btn => {
-			btn.classList.toggle('active', btn.dataset.category === activeCategory);
+		// ── 更新侧边栏按钮激活态 ──
+		categoryBtns.forEach(btn => {
+			const isActive = activeType === 'category' && btn.dataset.value === activeValue;
+			btn.classList.toggle('active', isActive);
+		});
+		tagBtns.forEach(btn => {
+			const isActive = activeType === 'tag' && btn.dataset.value === activeValue;
+			btn.classList.toggle('active', isActive);
 		});
 
-		// 显隐文章
+		// ── 显示/隐藏筛选状态提示 ──
+		const isFiltered = !(activeType === 'category' && activeValue === '全部');
+		if (filterStatus) {
+			filterStatus.style.display = isFiltered ? 'flex' : 'none';
+		}
+		if (filterText && isFiltered) {
+			const label = activeType === 'category' ? '分类' : '标签';
+			filterText.textContent = `当前筛选：${label} / ${activeValue}`;
+		}
+
+		// ── 显隐文章 ──
 		let visible = 0;
-		posts.forEach(post => {
-			const show = activeCategory === '全部' || post.dataset.category === activeCategory;
+		postEls.forEach(post => {
+			let show = false;
+			if (activeType === 'category') {
+				show = activeValue === '全部' || post.dataset.category === activeValue;
+			} else {
+				const tags = post.dataset.tags ? post.dataset.tags.split(',') : [];
+				show = tags.includes(activeValue);
+			}
 			post.style.display = show ? '' : 'none';
 			if (show) visible++;
 		});
 
-		postsList.style.display = visible === 0 ? 'none' : '';
-		noPosts.style.display   = visible === 0 ? 'block' : 'none';
+		if (postsListEl) postsListEl.style.display = visible === 0 ? 'none' : '';
+		if (noPostsEl)   noPostsEl.style.display   = visible === 0 ? 'block' : 'none';
 
-		// 重排序号
+		// ── 重排序号 ──
 		if (visible > 0) {
 			let idx = 1;
-			posts.forEach(post => {
+			postEls.forEach(post => {
 				if (post.style.display !== 'none') {
 					const num = post.querySelector('.post-number');
 					if (num) num.textContent = String(idx++).padStart(2, '0');
@@ -421,4 +731,42 @@ function formatDate(date: Date) {
 			});
 		}
 	}
+
+	// ── 绑定侧边栏按钮事件 ──
+	function initFilters() {
+		document.querySelectorAll('.sidebar-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				applyFilter(btn.dataset.type, btn.dataset.value);
+			});
+		});
+
+		document.querySelectorAll('.sidebar-tag-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				// 再次点击同一标签则取消
+				if (activeType === 'tag' && activeValue === btn.dataset.value) {
+					clearFilter();
+				} else {
+					applyFilter(btn.dataset.type, btn.dataset.value);
+				}
+			});
+		});
+
+		const clearBtns = [
+			document.getElementById('filter-clear-btn'),
+			document.getElementById('no-posts-clear-btn'),
+		];
+		clearBtns.forEach(btn => {
+			if (btn) btn.addEventListener('click', clearFilter);
+		});
+	}
+
+	// 页面初次加载
+	initFilters();
+
+	// Astro View Transitions 重新挂载后重新绑定
+	document.addEventListener('astro:page-load', () => {
+		activeType  = 'category';
+		activeValue = '全部';
+		initFilters();
+	});
 </script>
