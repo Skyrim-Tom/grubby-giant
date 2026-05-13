@@ -17,7 +17,7 @@ let observer: IntersectionObserver | null = null;
 onMounted(() => {
 	// 获取所有标题元素
 	const headingElements = document.querySelectorAll('#article-content :is(h2, h3)');
-	
+
 	// 创建 IntersectionObserver
 	observer = new IntersectionObserver(
 		(entries) => {
@@ -33,7 +33,7 @@ onMounted(() => {
 			threshold: 0,
 		}
 	);
-	
+
 	headingElements.forEach((heading) => observer?.observe(heading));
 });
 
@@ -47,12 +47,12 @@ const scrollToHeading = (slug: string) => {
 		const headerOffset = 80;
 		const elementPosition = target.getBoundingClientRect().top;
 		const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-		
+
 		window.scrollTo({
 			top: offsetPosition,
 			behavior: 'smooth',
 		});
-		
+
 		history.pushState(null, '', `#${slug}`);
 	}
 };
@@ -60,8 +60,14 @@ const scrollToHeading = (slug: string) => {
 
 <template>
 	<div class="toc-container">
-		<h3 class="toc-title">目录</h3>
-		<nav class="toc-nav">
+		<div class="toc-header">
+			<div class="toc-eyebrow">
+				<span class="eyebrow-mark" aria-hidden="true">✦</span>
+				<span>ON THIS PAGE</span>
+			</div>
+			<h3 class="toc-title">目录</h3>
+		</div>
+		<nav class="toc-nav" v-if="headings.length > 0">
 			<a
 				v-for="heading in headings"
 				:key="heading.slug"
@@ -76,60 +82,90 @@ const scrollToHeading = (slug: string) => {
 				{{ heading.text }}
 			</a>
 		</nav>
+		<p class="toc-empty" v-else>暂无目录</p>
 	</div>
 </template>
 
 <style scoped>
 .toc-container {
-	background: var(--vp-c-bg-elv);
-	border: 1px solid var(--vp-c-divider);
-	border-radius: 12px;
-	padding: 20px;
+	padding-top: 32px;
+}
+
+/* ── Header ── */
+.toc-header {
+	margin-bottom: 16px;
+}
+
+.toc-eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 0.625rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: var(--c-muted);
+	margin-bottom: 8px;
+}
+
+.eyebrow-mark {
+	color: var(--c-primary);
 }
 
 .toc-title {
-	font-size: 0.875rem;
-	font-weight: 600;
-	color: var(--vp-c-text-1);
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	margin-bottom: 16px;
-	padding-bottom: 12px;
-	border-bottom: 1px solid var(--vp-c-divider);
+	font-family: var(--font-display);
+	font-size: 1rem;
+	font-weight: 400;
+	letter-spacing: -0.02em;
+	color: var(--c-ink);
+	line-height: 1.2;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--c-hairline-soft);
 }
 
+/* ── Nav ── */
 .toc-nav {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: 1px;
 }
 
 .toc-link {
 	display: block;
-	padding: 6px 10px;
-	border-radius: 6px;
-	color: var(--vp-c-text-2);
+	padding: 5px 10px;
+	border-radius: 5px;
+	color: var(--c-muted);
 	text-decoration: none;
 	font-size: 0.8125rem;
 	line-height: 1.5;
-	transition: all 0.2s;
+	transition: color 0.15s, background 0.15s;
 	border-left: 2px solid transparent;
 }
 
 .toc-link:hover {
-	color: var(--vp-c-text-1);
-	background: var(--vp-c-bg-soft);
+	color: var(--c-ink);
+	background: var(--c-surface-card);
 }
 
 .toc-link.active {
-	color: var(--vp-c-brand-1);
-	background: var(--vp-c-brand-soft);
-	border-left-color: var(--vp-c-brand-1);
+	color: var(--c-primary);
+	border-left-color: var(--c-primary);
 	font-weight: 500;
+	padding-left: 12px;
 }
 
 .toc-level-3 {
-	padding-left: 20px;
+	padding-left: 18px;
 	font-size: 0.75rem;
+}
+
+.toc-level-3.active {
+	padding-left: 20px;
+}
+
+.toc-empty {
+	font-size: 0.8125rem;
+	color: var(--c-muted);
+	padding: 8px 10px;
 }
 </style>

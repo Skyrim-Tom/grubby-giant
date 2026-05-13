@@ -8,7 +8,7 @@ interface Props {
 	description?: string;
 }
 
-const { title = "我的博客", description = "分享技术、摄影与生活" } = Astro.props;
+const { title = "Momoc's Blog", description = "前端开发 · 摄影 · 生活" } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
 
@@ -25,8 +25,8 @@ const currentPath = Astro.url.pathname;
 		<ClientRouter fallback="swap" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-		<!-- 主题初始化脚本 - 在页面渲染前执行，防止闪烁 -->
+		<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+		<!-- 主题初始化 - 在渲染前执行防止闪烁 -->
 		<script is:inline>
 			window.applyTheme = function() {
 				const savedTheme = localStorage.getItem('theme');
@@ -34,7 +34,6 @@ const currentPath = Astro.url.pathname;
 				const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
 				document.documentElement.setAttribute('data-theme', theme);
 			};
-
 			window.applyTheme();
 			if (!window.__themeAfterSwapListener) {
 				document.addEventListener('astro:after-swap', () => window.applyTheme());
@@ -44,30 +43,30 @@ const currentPath = Astro.url.pathname;
 	</head>
 	<body>
 		<div class="layout">
-			<!-- Vue 导航组件 -->
 			<NavBar currentPath={currentPath} client:load transition:persist="site-header">
 				<ThemeToggle slot="actions" client:load />
 			</NavBar>
 
-			<!-- 主内容区 -->
 			<main class="main">
 				<slot />
 			</main>
 
-			<!-- 页脚 -->
+			<!-- Footer — 深海军蓝 -->
 			<footer class="footer">
 				<div class="footer-container">
-					<div class="footer-content">
-						<p class="footer-text">
-							© {new Date().getFullYear()} Blog. Built with 
-							<a href="https://astro.build" target="_blank" rel="noopener" class="footer-link">Astro</a>
-						</p>
-						<p class="footer-beian">
-							<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="beian-link">
-								粤ICP备2025366790号-1
-							</a>
-						</p>
+					<div class="footer-brand">
+						<svg class="footer-mark" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+							<path d="M9 1.5V16.5M1.5 9H16.5M3.697 3.697L14.303 14.303M14.303 3.697L3.697 14.303" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+						</svg>
+						<span class="footer-logo-text">Momoc's Blog</span>
 					</div>
+					<p class="footer-copy">
+						© {new Date().getFullYear()} · Built with
+						<a href="https://astro.build" target="_blank" rel="noopener" class="footer-link">Astro</a>
+					</p>
+					<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="footer-beian">
+						粤ICP备2025366790号-1
+					</a>
 				</div>
 			</footer>
 		</div>
@@ -75,70 +74,109 @@ const currentPath = Astro.url.pathname;
 </html>
 
 <style is:global>
-	/* CSS Variables - Light Theme (Default) */
+	/* ============================================
+	   DESIGN SYSTEM — CLAUDE.COM / ANTHROPIC STYLE
+	   ============================================ */
+
 	:root {
-		--vp-c-bg: #ffffff;
-		--vp-c-bg-alt: #f6f6f7;
-		--vp-c-bg-elv: #ffffff;
-		--vp-c-bg-soft: #f6f6f7;
-		
-		--vp-c-text-1: rgba(60, 60, 67);
-		--vp-c-text-2: rgba(60, 60, 67, 0.78);
-		--vp-c-text-3: rgba(60, 60, 67, 0.56);
-		
-		--vp-c-divider: rgba(60, 60, 67, 0.12);
-		--vp-c-border: rgba(60, 60, 67, 0.29);
-		
-		--vp-c-brand-1: #10b981;
-		--vp-c-brand-2: #059669;
-		--vp-c-brand-3: #047857;
-		--vp-c-brand-soft: rgba(16, 185, 129, 0.14);
-		
-		--vp-c-green-1: #10b981;
-		--vp-c-green-2: #059669;
-		--vp-c-green-3: #047857;
-		--vp-c-green-soft: rgba(16, 185, 129, 0.14);
-		
-		--vp-c-gray-1: #8e8e93;
-		--vp-c-gray-2: #aeaeb2;
-		--vp-c-gray-3: #c7c7cc;
-		
-		--vp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-		--vp-shadow-2: 0 3px 12px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.07);
-		--vp-shadow-3: 0 12px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.08);
-		
-		--vp-font-family-base: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-		--vp-font-family-mono: 'Fira Code', 'SF Mono', Monaco, Inconsolata, monospace;
-		
+		/* ── Brand ── */
+		--c-primary:          #cc785c;
+		--c-primary-active:   #a9583e;
+		--c-primary-disabled: #e6dfd8;
+
+		/* ── Surfaces (Light) ── */
+		--c-canvas:              #faf9f5;
+		--c-surface-soft:        #f5f0e8;
+		--c-surface-card:        #efe9de;
+		--c-surface-cream-strong:#e8e0d2;
+		--c-surface-dark:        #181715;
+		--c-surface-dark-elevated:#252320;
+		--c-surface-dark-soft:   #1f1e1b;
+
+		/* ── Text (Light) ── */
+		--c-ink:         #141413;
+		--c-body:        #3d3d3a;
+		--c-body-strong: #252523;
+		--c-muted:       #6c6a64;
+		--c-muted-soft:  #8e8b82;
+		--c-on-primary:  #ffffff;
+		--c-on-dark:     #faf9f5;
+		--c-on-dark-soft:#a09d96;
+
+		/* ── Borders ── */
+		--c-hairline:     #e6dfd8;
+		--c-hairline-soft:#ebe6df;
+
+		/* ── Accent ── */
+		--c-teal:    #5db8a6;
+		--c-amber:   #e8a55a;
+		--c-success: #5db872;
+		--c-warning: #d4a017;
+		--c-error:   #c64545;
+
+		/* ── vp-c-* 兼容映射（供组件继续使用） ── */
+		--vp-c-bg:       var(--c-canvas);
+		--vp-c-bg-alt:   var(--c-surface-soft);
+		--vp-c-bg-elv:   var(--c-surface-card);
+		--vp-c-bg-soft:  var(--c-surface-soft);
+		--vp-c-text-1:   var(--c-ink);
+		--vp-c-text-2:   var(--c-body);
+		--vp-c-text-3:   var(--c-muted);
+		--vp-c-divider:  var(--c-hairline-soft);
+		--vp-c-border:   var(--c-hairline);
+		--vp-c-brand-1:  var(--c-primary);
+		--vp-c-brand-2:  var(--c-primary-active);
+		--vp-c-brand-3:  #894432;
+		--vp-c-brand-soft: rgba(204, 120, 92, 0.1);
+		--vp-shadow-1: 0 1px 3px rgba(20,20,19,0.06);
+		--vp-shadow-2: 0 1px 3px rgba(20,20,19,0.08);
+		--vp-shadow-3: 0 4px 24px rgba(20,20,19,0.07);
+
+		/* ── Typography ── */
+		--font-display: 'Cormorant Garamond', 'Tiempos Headline', 'EB Garamond', Georgia, serif;
+		--font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		--font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+		--vp-font-family-base: var(--font-body);
+		--vp-font-family-mono: var(--font-mono);
+
 		--header-height: 64px;
 	}
 
-	/* Dark Theme */
+	/* ── Dark Theme ── */
 	[data-theme="dark"] {
-		--vp-c-bg: #1b1b1f;
-		--vp-c-bg-alt: #161618;
-		--vp-c-bg-elv: #202127;
-		--vp-c-bg-soft: #202127;
-		
-		--vp-c-text-1: rgba(255, 255, 245, 0.86);
-		--vp-c-text-2: rgba(235, 235, 245, 0.6);
-		--vp-c-text-3: rgba(235, 235, 245, 0.38);
-		
-		--vp-c-divider: rgba(255, 255, 245, 0.1);
-		--vp-c-border: rgba(255, 255, 245, 0.2);
-		
-		--vp-c-brand-1: #34d399;
-		--vp-c-brand-2: #10b981;
-		--vp-c-brand-3: #059669;
-		--vp-c-brand-soft: rgba(16, 185, 129, 0.16);
-		
-		--vp-c-green-1: #34d399;
-		--vp-c-green-2: #10b981;
-		--vp-c-green-3: #059669;
-		--vp-c-green-soft: rgba(16, 185, 129, 0.16);
+		--c-canvas:              #181715;
+		--c-surface-soft:        #1f1e1b;
+		--c-surface-card:        #252320;
+		--c-surface-cream-strong:#2e2c29;
+		--c-surface-dark:        #111010;
+		--c-surface-dark-elevated:#1a1917;
+		--c-surface-dark-soft:   #161513;
+
+		--c-ink:         #faf9f5;
+		--c-body:        #a09d96;
+		--c-body-strong: #d4d0c8;
+		--c-muted:       #6c6a64;
+		--c-muted-soft:  #504e49;
+		--c-on-dark:     #faf9f5;
+		--c-on-dark-soft:#a09d96;
+
+		--c-hairline:     rgba(250,249,245,0.12);
+		--c-hairline-soft:rgba(250,249,245,0.07);
+
+		--vp-c-bg:      #181715;
+		--vp-c-bg-alt:  #1f1e1b;
+		--vp-c-bg-elv:  #252320;
+		--vp-c-bg-soft: #1f1e1b;
+		--vp-c-text-1:  #faf9f5;
+		--vp-c-text-2:  #a09d96;
+		--vp-c-text-3:  #6c6a64;
+		--vp-c-divider: rgba(250,249,245,0.07);
+		--vp-c-border:  rgba(250,249,245,0.12);
+		--vp-c-brand-soft: rgba(204,120,92,0.15);
 	}
 
-	* {
+	/* ── Reset ── */
+	*, *::before, *::after {
 		box-sizing: border-box;
 		margin: 0;
 		padding: 0;
@@ -149,12 +187,13 @@ const currentPath = Astro.url.pathname;
 	}
 
 	body {
-		font-family: var(--vp-font-family-base);
-		background-color: var(--vp-c-bg);
-		color: var(--vp-c-text-1);
+		font-family: var(--font-body);
+		background-color: var(--c-canvas);
+		color: var(--c-ink);
 		line-height: 1.6;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
+		transition: background-color 0.3s, color 0.3s;
 	}
 
 	.layout {
@@ -163,200 +202,73 @@ const currentPath = Astro.url.pathname;
 		flex-direction: column;
 	}
 
-	/* Header */
-	.header {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		z-index: 100;
-		height: var(--header-height);
-		background-color: var(--vp-c-bg);
-		border-bottom: 1px solid var(--vp-c-divider);
-		transition: background-color 0.3s, border-color 0.3s;
-	}
-
-	.header-container {
-		max-width: 1440px;
-		margin: 0 auto;
-		padding: 0 24px;
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.logo {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		text-decoration: none;
-		color: var(--vp-c-text-1);
-		font-weight: 600;
-		font-size: 1.25rem;
-		transition: color 0.2s;
-	}
-
-	.logo:hover {
-		color: var(--vp-c-brand-1);
-	}
-
-	.logo-icon {
-		color: var(--vp-c-brand-1);
-		font-size: 1.5rem;
-	}
-
-	.nav {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.nav-link {
-		padding: 0 16px;
-		line-height: 36px;
-		border-radius: 8px;
-		color: var(--vp-c-text-2);
-		text-decoration: none;
-		font-size: 0.9rem;
-		font-weight: 500;
-		transition: all 0.2s;
-	}
-
-	.nav-link:hover {
-		color: var(--vp-c-text-1);
-		background-color: var(--vp-c-bg-soft);
-	}
-
-	.nav-link.active {
-		color: var(--vp-c-brand-1);
-		background-color: var(--vp-c-brand-soft);
-	}
-
-	.header-actions {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.theme-toggle {
-		width: 40px;
-		height: 40px;
-		border-radius: 8px;
-		border: none;
-		background: transparent;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 1.25rem;
-		transition: background-color 0.2s;
-		position: relative;
-	}
-
-	.theme-toggle:hover {
-		background-color: var(--vp-c-bg-soft);
-	}
-
-	.theme-icon {
-		position: absolute;
-		transition: opacity 0.2s, transform 0.2s;
-	}
-
-	[data-theme="light"] .theme-icon.dark,
-	[data-theme="dark"] .theme-icon.light {
-		opacity: 0;
-		transform: scale(0.5);
-	}
-
-	[data-theme="light"] .theme-icon.light,
-	[data-theme="dark"] .theme-icon.dark {
-		opacity: 1;
-		transform: scale(1);
-	}
-
-	/* Main */
 	.main {
 		flex: 1;
 		margin-top: var(--header-height);
-		min-height: calc(100vh - var(--header-height) - 80px);
 	}
 
-	/* Footer */
+	/* ── Footer ── */
 	.footer {
-		border-top: 1px solid var(--vp-c-divider);
-		background-color: var(--vp-c-bg);
-		padding: 24px 0;
-		transition: background-color 0.3s, border-color 0.3s;
+		background-color: #181715; /* 始终深色，不跟随主题 */
+		padding: 48px 0 40px;
 	}
 
 	.footer-container {
-		max-width: 1440px;
+		max-width: 1200px;
 		margin: 0 auto;
 		padding: 0 24px;
-	}
-
-	.footer-content {
 		text-align: center;
 	}
 
-	.footer-text {
-		color: var(--vp-c-text-2);
+	.footer-brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: 18px;
+	}
+
+	.footer-mark {
+		color: rgba(250,249,245,0.5);
+	}
+
+	.footer-logo-text {
+		font-size: 0.9375rem;
+		font-weight: 500;
+		color: #faf9f5;
+		letter-spacing: -0.01em;
+	}
+
+	.footer-copy {
 		font-size: 0.875rem;
+		color: #a09d96;
+		margin-bottom: 8px;
 	}
 
 	.footer-link {
-		color: var(--vp-c-brand-1);
+		color: var(--c-primary);
 		text-decoration: none;
-		font-weight: 500;
-		transition: color 0.2s;
 	}
 
 	.footer-link:hover {
-		color: var(--vp-c-brand-2);
+		opacity: 0.8;
 	}
 
 	.footer-beian {
-		margin-top: 8px;
-	}
-
-	.beian-link {
-		color: var(--vp-c-text-3);
-		text-decoration: none;
+		display: inline-block;
 		font-size: 0.8125rem;
+		color: #504e49;
+		text-decoration: none;
 		transition: color 0.2s;
 	}
 
-	.beian-link:hover {
-		color: var(--vp-c-brand-1);
+	.footer-beian:hover {
+		color: #a09d96;
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
-		.header-container {
-			padding: 0 16px;
-		}
-
-		.nav {
-			gap: 4px;
-		}
-
-		.nav-link {
-			padding: 0 12px;
-			font-size: 0.85rem;
-		}
-
-		.logo-text {
-			display: none;
-		}
-	}
-
-	/* ===== Shiki 双主题代码高亮 ===== */
-	/* 浅色为 Shiki 默认输出，深色模式下用 !important 覆盖内联 style */
+	/* ── Shiki 代码高亮双主题 ── */
 	[data-theme="dark"] .astro-code {
 		background-color: var(--shiki-dark-bg) !important;
 	}
-
 	[data-theme="dark"] .astro-code span {
 		color: var(--shiki-dark) !important;
 	}

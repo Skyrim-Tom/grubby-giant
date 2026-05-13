@@ -5,7 +5,6 @@ const toggleTheme = () => {
 	const html = document.documentElement;
 	const currentTheme = html.getAttribute('data-theme');
 	const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-	
 	html.setAttribute('data-theme', newTheme);
 	localStorage.setItem('theme', newTheme);
 };
@@ -14,26 +13,26 @@ const toggleTheme = () => {
 <template>
 	<div class="header-actions">
 		<!-- GitHub 链接 -->
-		<a 
-			href="https://github.com/Skyrim-Tom/grubby-giant" 
-			target="_blank" 
+		<a
+			href="https://github.com/Skyrim-Tom/grubby-giant"
+			target="_blank"
 			rel="noopener noreferrer"
 			class="github-link"
-			aria-label="GitHub"
+			aria-label="GitHub 仓库"
 		>
 			<Github class="github-icon" />
 		</a>
 
-		<!-- 主题切换开关 - 使用 data-theme 属性控制样式，避免水合闪烁 -->
-		<button 
-			class="theme-switch" 
+		<!-- 主题切换开关 -->
+		<button
+			class="theme-switch"
 			@click="toggleTheme"
-			aria-label="切换主题"
+			aria-label="切换明暗主题"
 		>
 			<div class="switch-track">
 				<div class="switch-thumb">
-					<Sun class="switch-icon sun" :size="14" />
-					<Moon class="switch-icon moon" :size="14" />
+					<Sun class="switch-icon sun" :size="13" />
+					<Moon class="switch-icon moon" :size="13" />
 				</div>
 			</div>
 		</button>
@@ -44,10 +43,10 @@ const toggleTheme = () => {
 .header-actions {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 6px;
 }
 
-/* GitHub 链接 */
+/* ── GitHub link ── */
 .github-link {
 	width: 36px;
 	height: 36px;
@@ -55,100 +54,95 @@ const toggleTheme = () => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: var(--vp-c-text-2);
-	background: transparent;
-	transition: all 0.2s ease;
+	color: var(--c-muted);
 	text-decoration: none;
+	transition: color 0.2s, background-color 0.2s;
 }
 
 .github-link:hover {
-	color: var(--vp-c-text-1);
-	background-color: var(--vp-c-bg-soft);
-	transform: translateY(-1px);
+	color: var(--c-ink);
+	background-color: var(--c-surface-card);
 }
 
 .github-icon {
-	width: 20px;
-	height: 20px;
+	width: 18px;
+	height: 18px;
 }
 
-/* 主题切换开关 */
+/* ── Theme switch ── */
 .theme-switch {
-	width: 52px;
-	height: 28px;
+	width: 48px;
+	height: 26px;
 	padding: 0;
 	border: none;
 	background: transparent;
 	cursor: pointer;
-	position: relative;
 }
 
 .switch-track {
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-	border-radius: 14px;
+	/* Light mode: warm cream tones */
+	background: var(--c-surface-cream-strong);
+	border: 1px solid var(--c-hairline);
+	border-radius: 13px;
 	position: relative;
-	transition: background 0.3s ease;
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+	transition: background 0.3s, border-color 0.3s;
 }
 
 [data-theme="dark"] .theme-switch .switch-track {
-	background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+	background: var(--c-surface-dark-elevated);
+	border-color: rgba(250,249,245,0.15);
 }
 
 .switch-thumb {
 	position: absolute;
 	top: 2px;
 	left: 2px;
-	width: 24px;
-	height: 24px;
-	background: white;
+	width: 20px;
+	height: 20px;
+	background: var(--c-canvas);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+	box-shadow: 0 1px 3px rgba(20,20,19,0.15);
 }
 
 [data-theme="dark"] .theme-switch .switch-thumb {
-	transform: translateX(24px);
+	transform: translateX(22px);
+	background: var(--c-surface-card);
 }
 
 .switch-icon {
 	position: absolute;
-	transition: opacity 0.2s ease, transform 0.2s ease;
+	transition: opacity 0.2s, transform 0.2s;
 }
 
 .switch-icon.sun {
-	color: #f59e0b;
+	color: var(--c-amber);
 	opacity: 1;
-	transform: scale(1) rotate(0deg);
+	transform: scale(1);
 }
 
 .switch-icon.moon {
-	color: #6366f1;
+	color: var(--c-on-dark-soft);
 	opacity: 0;
-	transform: scale(0.5) rotate(-90deg);
+	transform: scale(0.5);
 }
 
-[data-theme="dark"] .theme-switch .switch-icon.sun {
+[data-theme="dark"] .switch-icon.sun {
 	opacity: 0;
-	transform: scale(0.5) rotate(90deg);
+	transform: scale(0.5);
 }
 
-[data-theme="dark"] .theme-switch .switch-icon.moon {
+[data-theme="dark"] .switch-icon.moon {
 	opacity: 1;
-	transform: scale(1) rotate(0deg);
+	transform: scale(1);
 }
 
-/* 悬停效果 */
 .theme-switch:hover .switch-track {
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 0 0 2px var(--vp-c-brand-soft);
-}
-
-.theme-switch:hover .switch-thumb {
-	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+	border-color: var(--c-primary);
 }
 </style>

@@ -5,676 +5,418 @@ import Layout from '../../layouts/Layout.astro';
 const title = "文章";
 const description = "技术文章、教程与生活分享";
 
-// 获取所有文章
 const allPosts = await getCollection('posts');
 
-// 按日期排序
-const posts = allPosts.sort((a, b) => 
+const posts = allPosts.sort((a, b) =>
 	new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
 );
 
 const categories = ["全部", ...new Set(posts.map(post => post.data.category))];
-const allTags = [...new Set(posts.flatMap(post => post.data.tags))];
 
-// 格式化日期
 function formatDate(date: Date) {
 	return new Date(date).toISOString().split('T')[0];
 }
-
-// 为每篇文章准备标签数据用于前端筛选
-const postsData = posts.map(post => ({
-	id: post.id,
-	title: post.data.title,
-	description: post.data.description,
-	category: post.data.category,
-	tags: post.data.tags,
-	pubDate: formatDate(post.data.pubDate),
-	readTime: post.data.readTime
-}));
 ---
 
 <Layout title={title} description={description}>
-	<div class="posts-page">
-		<!-- Hero Header -->
-		<div class="page-hero">
-			<div class="hero-container">
-				<h1 class="hero-title">文章</h1>
-				<p class="hero-desc">探索技术文章，分享学习心得</p>
-				<div class="posts-stats">
-					<div class="stat-item">
-						<span class="stat-value">{posts.length}</span>
-						<span class="stat-label">篇文章</span>
-					</div>
-					<div class="stat-divider"></div>
-					<div class="stat-item">
-						<span class="stat-value">{categories.length - 1}</span>
-						<span class="stat-label">个分类</span>
-					</div>
-					<div class="stat-divider"></div>
-					<div class="stat-item">
-						<span class="stat-value">{allTags.length}</span>
-						<span class="stat-label">个标签</span>
-					</div>
-				</div>
+<div class="posts-page">
+
+	<!-- ══ 页面 Hero 头部 ══ -->
+	<div class="page-header">
+		<div class="page-header-inner">
+			<div class="page-eyebrow">
+				<span class="eyebrow-mark" aria-hidden="true">✦</span>
+				<span>ARTICLES</span>
 			</div>
-		</div>
-
-		<div class="content-container">
-			<!-- Sidebar Filters -->
-			<aside class="sidebar">
-				<div class="filter-section">
-					<h3 class="filter-title">
-						<svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M4 6h16M4 12h16M4 18h7"/>
-						</svg>
-						分类
-					</h3>
-					<div class="filter-list" id="category-filters">
-						{categories.map((category) => (
-							<button 
-								class={`filter-btn ${category === '全部' ? 'active' : ''}`}
-								data-category={category}
-								onclick={`filterByCategory('${category}')`}
-							>
-								{category}
-							</button>
-						))}
-					</div>
-				</div>
-
-				<div class="filter-section">
-					<h3 class="filter-title">
-						<svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-						</svg>
-						热门标签
-					</h3>
-					<div class="tag-cloud" id="tag-filters">
-						{allTags.slice(0, 8).map((tag) => (
-							<span 
-								class="tag-item"
-								data-tag={tag}
-								onclick={`filterByTag('${tag}')`}
-							>{tag}</span>
-						))}
-					</div>
-				</div>
-			</aside>
-
-			<!-- Posts List -->
-			<div class="posts-main">
-				<div class="filter-status" id="filter-status" style="display: none;">
-					<span class="filter-label">当前筛选:</span>
-					<span class="filter-value" id="filter-value"></span>
-					<button class="clear-filter" onclick="clearFilter()">清除筛选</button>
-				</div>
-				<div class="posts-list" id="posts-list">
-					{posts.map((post, index) => (
-						<article 
-							class="post-item" 
-							data-category={post.data.category}
-							data-tags={post.data.tags.join(',')}
-						>
-							<div class="post-meta-row">
-								<span class="post-category-badge">{post.data.category}</span>
-								<span class="post-dot"></span>
-								<time class="post-date">{formatDate(post.data.pubDate)}</time>
-								<span class="post-dot"></span>
-								<span class="post-readtime">{post.data.readTime}阅读</span>
-							</div>
-							<h2 class="post-title">
-								<a href={`/posts/${post.id}`}>
-									<span class="post-number">{String(index + 1).padStart(2, '0')}</span>
-									{post.data.title}
-								</a>
-							</h2>
-							<p class="post-excerpt">{post.data.description}</p>
-							<div class="post-footer">
-								<div class="post-tags">
-									{post.data.tags.slice(0, 3).map((tag: string) => (
-										<span class="post-tag">{tag}</span>
-									))}
-								</div>
-								<a href={`/posts/${post.id}`} class="read-more">
-									阅读文章
-									<svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<path d="M5 12h14M12 5l7 7-7 7"/>
-									</svg>
-								</a>
-							</div>
-						</article>
-					))}
-				</div>
-				<div class="no-posts" id="no-posts" style="display: none;">
-					<svg class="no-posts-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-						<path d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.467-.881-6.08-2.33M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-					</svg>
-					<p>没有找到相关文章</p>
-					<button class="clear-filter-btn" onclick="clearFilter()">清除筛选</button>
-				</div>
-			</div>
+			<h1 class="page-title">文章列表</h1>
+			<p class="page-desc">{posts.length} 篇文章，记录技术探索与生活点滴</p>
 		</div>
 	</div>
+
+	<!-- ══ 文章内容区 ══ -->
+	<div class="posts-content">
+
+		<!-- 分类筛选栏 -->
+		<div class="filter-bar">
+			{categories.map((category) => (
+				<button
+					class={`filter-btn ${category === '全部' ? 'active' : ''}`}
+					data-category={category}
+					onclick={`filterByCategory('${category}')`}
+				>
+					{category}
+				</button>
+			))}
+		</div>
+
+		<!-- 文章列表 -->
+		<div class="posts-list" id="posts-list">
+			{posts.map((post, index) => (
+				<article
+					class="post-item"
+					data-category={post.data.category}
+				>
+					<div class="post-meta-row">
+						<span class="post-category-badge">{post.data.category}</span>
+						<span class="post-dot" aria-hidden="true"></span>
+						<time class="post-date">{formatDate(post.data.pubDate)}</time>
+						<span class="post-dot" aria-hidden="true"></span>
+						<span class="post-readtime">{post.data.readTime}阅读</span>
+					</div>
+					<h2 class="post-title">
+						<a href={`/posts/${post.id}`}>
+							<span class="post-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+							{post.data.title}
+						</a>
+					</h2>
+					<p class="post-excerpt">{post.data.description}</p>
+					<div class="post-footer">
+						<div class="post-tags">
+							{post.data.tags.slice(0, 3).map((tag: string) => (
+								<span class="post-tag">{tag}</span>
+							))}
+						</div>
+						<a href={`/posts/${post.id}`} class="read-more">
+							阅读文章
+							<svg class="arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+								<path d="M5 12h14M12 5l7 7-7 7"/>
+							</svg>
+						</a>
+					</div>
+				</article>
+			))}
+		</div>
+
+		<!-- 空状态 -->
+		<div class="no-posts" id="no-posts" style="display: none;">
+			<svg class="no-posts-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+				<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+			</svg>
+			<p>没有找到相关文章</p>
+			<button class="clear-filter-btn" onclick="clearFilter()">清除筛选</button>
+		</div>
+
+	</div>
+</div>
 </Layout>
 
 <style>
-	.posts-page {
-		min-height: calc(100vh - var(--header-height));
+/* ══ 页面框架 ══ */
+.posts-page {
+	min-height: calc(100vh - var(--header-height));
+}
+
+/* ══ 页面 Hero ══ */
+.page-header {
+	padding: 72px 24px 48px;
+	border-bottom: 1px solid var(--c-hairline-soft);
+}
+
+.page-header-inner {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.page-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 0.6875rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: var(--c-muted);
+	margin-bottom: 16px;
+}
+
+.eyebrow-mark {
+	color: var(--c-primary);
+}
+
+.page-title {
+	font-family: var(--font-display);
+	font-size: clamp(2rem, 5vw, 3.25rem);
+	font-weight: 400;
+	letter-spacing: -0.04em;
+	color: var(--c-ink);
+	line-height: 1.1;
+	margin-bottom: 14px;
+}
+
+.page-desc {
+	font-size: 1rem;
+	color: var(--c-body);
+	line-height: 1.7;
+}
+
+/* ══ 内容区 ══ */
+.posts-content {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 40px 24px 80px;
+}
+
+/* ══ 分类筛选栏 ══ */
+.filter-bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 40px;
+}
+
+.filter-btn {
+	padding: 5px 14px;
+	border: 1px solid var(--c-hairline);
+	background: transparent;
+	color: var(--c-muted);
+	font-family: var(--font-body);
+	font-size: 0.875rem;
+	font-weight: 500;
+	border-radius: 9999px;
+	cursor: pointer;
+	transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.filter-btn:hover {
+	background: var(--c-surface-card);
+	color: var(--c-ink);
+	border-color: var(--c-hairline-soft);
+}
+
+.filter-btn.active {
+	background: var(--c-primary);
+	color: #fff;
+	border-color: var(--c-primary);
+}
+
+/* ══ 文章列表 ══ */
+.posts-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.post-item {
+	padding: 36px 0;
+	border-bottom: 1px solid var(--c-hairline-soft);
+}
+
+.post-item:first-child {
+	padding-top: 0;
+}
+
+.post-meta-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.post-category-badge {
+	font-size: 0.6875rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--c-primary);
+}
+
+.post-dot {
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: var(--c-muted);
+	flex-shrink: 0;
+}
+
+.post-date,
+.post-readtime {
+	font-size: 0.8125rem;
+	color: var(--c-muted);
+}
+
+.post-title {
+	font-family: var(--font-display);
+	font-size: 1.75rem;
+	font-weight: 500;
+	line-height: 1.2;
+	letter-spacing: -0.035em;
+	margin-bottom: 12px;
+}
+
+.post-title a {
+	color: var(--c-ink);
+	text-decoration: none;
+	display: flex;
+	align-items: baseline;
+	gap: 14px;
+	transition: color 0.2s;
+}
+
+.post-title a:hover {
+	color: var(--c-primary);
+}
+
+.post-number {
+	font-family: var(--font-mono);
+	font-size: 0.875rem;
+	font-weight: 400;
+	color: var(--c-muted);
+	flex-shrink: 0;
+	line-height: 1;
+}
+
+.post-title a:hover .post-number {
+	color: var(--c-primary);
+}
+
+.post-excerpt {
+	font-size: 0.9375rem;
+	color: var(--c-body);
+	line-height: 1.75;
+	margin-bottom: 16px;
+}
+
+.post-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.post-tags {
+	display: flex;
+	gap: 7px;
+	flex-wrap: wrap;
+}
+
+.post-tag {
+	padding: 3px 10px;
+	background: var(--c-surface-card);
+	border-radius: 9999px;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: var(--c-muted);
+}
+
+.read-more {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	color: var(--c-primary);
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 500;
+	transition: gap 0.2s;
+}
+
+.read-more:hover {
+	gap: 9px;
+}
+
+/* ══ 空状态 ══ */
+.no-posts {
+	text-align: center;
+	padding: 80px 20px;
+	color: var(--c-body);
+}
+
+.no-posts-icon {
+	width: 52px;
+	height: 52px;
+	margin: 0 auto 16px;
+	display: block;
+	opacity: 0.3;
+}
+
+.no-posts p {
+	font-size: 1rem;
+	margin-bottom: 20px;
+}
+
+.clear-filter-btn {
+	padding: 10px 24px;
+	background: var(--c-primary);
+	border: none;
+	border-radius: 8px;
+	color: #fff;
+	font-family: var(--font-body);
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.clear-filter-btn:hover {
+	background: var(--c-primary-active);
+}
+
+/* ══ 响应式 ══ */
+@media (max-width: 768px) {
+	.page-header {
+		padding: 48px 16px 32px;
 	}
 
-	/* Page Hero */
-	.page-hero {
-		background: linear-gradient(180deg, var(--vp-c-bg-alt) 0%, var(--vp-c-bg) 100%);
-		padding: 48px 24px 32px;
-		border-bottom: 1px solid var(--vp-c-divider);
-	}
-
-	.hero-container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.hero-title {
-		font-size: 2.5rem;
-		font-weight: 700;
-		color: var(--vp-c-text-1);
-		margin-bottom: 8px;
-		letter-spacing: -0.02em;
-	}
-
-	.hero-desc {
-		font-size: 1.125rem;
-		color: var(--vp-c-text-2);
-		margin-bottom: 24px;
-	}
-
-	.posts-stats {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-	}
-
-	.stat-item {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-	}
-
-	.stat-value {
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: var(--vp-c-brand-1);
-	}
-
-	.stat-label {
-		font-size: 0.875rem;
-		color: var(--vp-c-text-2);
-	}
-
-	.stat-divider {
-		width: 1px;
-		height: 16px;
-		background: var(--vp-c-divider);
-	}
-
-	/* Content Container */
-	.content-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 32px 24px;
-		display: grid;
-		grid-template-columns: 240px 1fr;
-		gap: 48px;
-	}
-
-	/* Sidebar */
-	.sidebar {
-		position: sticky;
-		top: calc(var(--header-height) + 32px);
-		height: fit-content;
-	}
-
-	.filter-section {
-		margin-bottom: 32px;
-	}
-
-	.filter-title {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 0.875rem;
-		font-weight: 600;
-		color: var(--vp-c-text-1);
-		margin-bottom: 16px;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.filter-icon {
-		width: 16px;
-		height: 16px;
-		color: var(--vp-c-text-3);
-	}
-
-	.filter-list {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.filter-btn {
-		display: flex;
-		align-items: center;
-		width: 100%;
-		padding: 8px 12px;
-		border: none;
-		background: transparent;
-		color: var(--vp-c-text-2);
-		font-size: 0.9375rem;
-		text-align: left;
-		border-radius: 6px;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.filter-btn:hover {
-		background: var(--vp-c-bg-soft);
-		color: var(--vp-c-text-1);
-	}
-
-	.filter-btn.active {
-		background: var(--vp-c-brand-soft);
-		color: var(--vp-c-brand-1);
-		font-weight: 500;
-	}
-
-	.tag-cloud {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-
-	.tag-item {
-		padding: 4px 10px;
-		background: var(--vp-c-bg-soft);
-		border: 1px solid var(--vp-c-divider);
-		border-radius: 4px;
-		font-size: 0.8125rem;
-		color: var(--vp-c-text-2);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.tag-item:hover {
-		border-color: var(--vp-c-brand-1);
-		color: var(--vp-c-brand-1);
-	}
-
-	.tag-item.active {
-		background: var(--vp-c-brand-soft);
-		border-color: var(--vp-c-brand-1);
-		color: var(--vp-c-brand-1);
-	}
-
-	/* Filter Status */
-	.filter-status {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-bottom: 20px;
-		padding: 12px 16px;
-		background: var(--vp-c-brand-soft);
-		border-radius: 8px;
-		font-size: 0.9375rem;
-	}
-
-	.filter-label {
-		color: var(--vp-c-text-2);
-	}
-
-	.filter-value {
-		color: var(--vp-c-brand-1);
-		font-weight: 600;
-	}
-
-	.clear-filter {
-		margin-left: auto;
-		padding: 4px 12px;
-		background: var(--vp-c-bg);
-		border: 1px solid var(--vp-c-divider);
-		border-radius: 4px;
-		color: var(--vp-c-text-2);
-		font-size: 0.8125rem;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.clear-filter:hover {
-		border-color: var(--vp-c-brand-1);
-		color: var(--vp-c-brand-1);
-	}
-
-	/* No Posts State */
-	.no-posts {
-		text-align: center;
-		padding: 60px 20px;
-		color: var(--vp-c-text-2);
-	}
-
-	.no-posts-icon {
-		width: 64px;
-		height: 64px;
-		margin-bottom: 16px;
-		opacity: 0.5;
-	}
-
-	.no-posts p {
-		font-size: 1rem;
-		margin-bottom: 16px;
-	}
-
-	.clear-filter-btn {
-		padding: 8px 20px;
-		background: var(--vp-c-brand-1);
-		border: none;
-		border-radius: 6px;
-		color: white;
-		font-size: 0.875rem;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.clear-filter-btn:hover {
-		background: var(--vp-c-brand-2);
-	}
-
-	/* Posts Main */
-	.posts-main {
-		min-width: 0;
-	}
-
-	.posts-list {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.post-item {
-		padding: 32px 0;
-		border-bottom: 1px solid var(--vp-c-divider);
-	}
-
-	.post-item:first-child {
-		padding-top: 0;
-	}
-
-	.post-meta-row {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-bottom: 12px;
-		font-size: 0.875rem;
-	}
-
-	.post-category-badge {
-		color: var(--vp-c-brand-1);
-		font-weight: 500;
-	}
-
-	.post-dot {
-		width: 4px;
-		height: 4px;
-		border-radius: 50%;
-		background: var(--vp-c-text-3);
-	}
-
-	.post-date,
-	.post-readtime {
-		color: var(--vp-c-text-3);
+	.posts-content {
+		padding: 32px 16px 64px;
 	}
 
 	.post-title {
 		font-size: 1.375rem;
-		font-weight: 600;
-		line-height: 1.4;
-		margin-bottom: 12px;
-	}
-
-	.post-title a {
-		color: var(--vp-c-text-1);
-		text-decoration: none;
-		display: flex;
-		align-items: baseline;
-		gap: 12px;
-		transition: color 0.2s;
-	}
-
-	.post-title a:hover {
-		color: var(--vp-c-brand-1);
 	}
 
 	.post-number {
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: var(--vp-c-text-3);
-		font-variant-numeric: tabular-nums;
-	}
-
-	.post-title a:hover .post-number {
-		color: var(--vp-c-brand-1);
-	}
-
-	.post-excerpt {
-		font-size: 0.9375rem;
-		color: var(--vp-c-text-2);
-		line-height: 1.7;
-		margin-bottom: 16px;
+		display: none;
 	}
 
 	.post-footer {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 12px;
+		flex-direction: column;
+		align-items: flex-start;
 	}
-
-	.post-tags {
-		display: flex;
-		gap: 8px;
-		flex-wrap: wrap;
-	}
-
-	.post-tag {
-		padding: 3px 10px;
-		background: var(--vp-c-bg-soft);
-		border-radius: 4px;
-		font-size: 0.8125rem;
-		color: var(--vp-c-text-2);
-	}
-
-	.read-more {
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-		color: var(--vp-c-brand-1);
-		text-decoration: none;
-		font-size: 0.9375rem;
-		font-weight: 500;
-		transition: color 0.2s;
-	}
-
-	.read-more:hover {
-		color: var(--vp-c-brand-2);
-	}
-
-	.arrow-icon {
-		width: 16px;
-		height: 16px;
-		transition: transform 0.2s;
-	}
-
-	.read-more:hover .arrow-icon {
-		transform: translateX(4px);
-	}
-
-	/* Responsive */
-	@media (max-width: 1024px) {
-		.content-container {
-			grid-template-columns: 1fr;
-			gap: 32px;
-		}
-
-		.sidebar {
-			position: static;
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
-			gap: 24px;
-		}
-
-		.filter-section {
-			margin-bottom: 0;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.page-hero {
-			padding: 32px 16px 24px;
-		}
-
-		.hero-title {
-			font-size: 1.875rem;
-		}
-
-		.posts-stats {
-			flex-wrap: wrap;
-		}
-
-		.content-container {
-			padding: 24px 16px;
-		}
-
-		.sidebar {
-			grid-template-columns: 1fr;
-		}
-
-		.post-item {
-			padding: 24px 0;
-		}
-
-		.post-title {
-			font-size: 1.125rem;
-		}
-
-		.post-number {
-			display: none;
-		}
-	}
+}
 </style>
 
 <script is:inline>
-	// 筛选功能
-	let currentFilter = { type: null, value: null };
+	let activeCategory = '全部';
 
 	function filterByCategory(category) {
-		currentFilter = { type: 'category', value: category };
-		updateUI();
-	}
-
-	function filterByTag(tag) {
-		currentFilter = { type: 'tag', value: tag };
+		activeCategory = category;
 		updateUI();
 	}
 
 	function clearFilter() {
-		currentFilter = { type: null, value: null };
+		activeCategory = '全部';
 		updateUI();
 	}
 
 	function updateUI() {
-		const posts = document.querySelectorAll('.post-item');
-		const categoryBtns = document.querySelectorAll('#category-filters .filter-btn');
-		const tagItems = document.querySelectorAll('#tag-filters .tag-item');
-		const filterStatus = document.getElementById('filter-status');
-		const filterValue = document.getElementById('filter-value');
-		const noPosts = document.getElementById('no-posts');
-		const postsList = document.getElementById('posts-list');
+		const posts        = document.querySelectorAll('.post-item');
+		const filterBtns   = document.querySelectorAll('.filter-btn');
+		const noPosts      = document.getElementById('no-posts');
+		const postsList    = document.getElementById('posts-list');
 
-		// 更新按钮激活状态
-		categoryBtns.forEach(btn => {
-			const category = btn.dataset.category;
-			if (currentFilter.type === 'category' && category === currentFilter.value) {
-				btn.classList.add('active');
-			} else if (currentFilter.type !== 'category' && category === '全部') {
-				btn.classList.add('active');
-			} else {
-				btn.classList.remove('active');
-			}
+		// 更新按钮激活态
+		filterBtns.forEach(btn => {
+			btn.classList.toggle('active', btn.dataset.category === activeCategory);
 		});
 
-		// 更新标签激活状态
-		tagItems.forEach(tag => {
-			const tagValue = tag.dataset.tag;
-			if (currentFilter.type === 'tag' && tagValue === currentFilter.value) {
-				tag.classList.add('active');
-			} else {
-				tag.classList.remove('active');
-			}
-		});
-
-		// 显示/隐藏筛选状态（点击"全部"时不显示）
-		const isAllCategory = currentFilter.type === 'category' && currentFilter.value === '全部';
-		if (currentFilter.type && !isAllCategory) {
-			filterStatus.style.display = 'flex';
-			filterValue.textContent = currentFilter.type === 'category' 
-				? `分类: ${currentFilter.value}` 
-				: `标签: ${currentFilter.value}`;
-		} else {
-			filterStatus.style.display = 'none';
-		}
-
-		// 筛选文章
-		let visibleCount = 0;
+		// 显隐文章
+		let visible = 0;
 		posts.forEach(post => {
-			let shouldShow = true;
-			
-			if (currentFilter.type === 'category') {
-				if (currentFilter.value === '全部') {
-					shouldShow = true;
-				} else {
-					shouldShow = post.dataset.category === currentFilter.value;
-				}
-			} else if (currentFilter.type === 'tag') {
-				const postTags = post.dataset.tags.split(',');
-				shouldShow = postTags.includes(currentFilter.value);
-			}
-
-			if (shouldShow) {
-				post.style.display = '';
-				visibleCount++;
-			} else {
-				post.style.display = 'none';
-			}
+			const show = activeCategory === '全部' || post.dataset.category === activeCategory;
+			post.style.display = show ? '' : 'none';
+			if (show) visible++;
 		});
 
-		// 显示/隐藏空状态
-		if (visibleCount === 0) {
-			postsList.style.display = 'none';
-			noPosts.style.display = 'block';
-		} else {
-			postsList.style.display = '';
-			noPosts.style.display = 'none';
-		}
+		postsList.style.display = visible === 0 ? 'none' : '';
+		noPosts.style.display   = visible === 0 ? 'block' : 'none';
 
-		// 更新序号
-		if (visibleCount > 0) {
-			let index = 1;
+		// 重排序号
+		if (visible > 0) {
+			let idx = 1;
 			posts.forEach(post => {
 				if (post.style.display !== 'none') {
-					const numberEl = post.querySelector('.post-number');
-					if (numberEl) {
-						numberEl.textContent = String(index).padStart(2, '0');
-						index++;
-					}
+					const num = post.querySelector('.post-number');
+					if (num) num.textContent = String(idx++).padStart(2, '0');
 				}
 			});
 		}

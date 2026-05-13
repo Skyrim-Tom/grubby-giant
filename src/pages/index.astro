@@ -4,15 +4,13 @@ import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.vue';
 
 const title = "首页";
-const description = "欢迎来到我的博客，分享技术、摄影与生活";
+const description = "欢迎来到 Momoc 的博客，分享前端技术、摄影与生活";
 
-// 获取最新文章
 const allPosts = await getCollection('posts');
 const latestPosts = allPosts
 	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
 	.slice(0, 3);
 
-// 获取最新相册
 const allAlbums = await getCollection('gallery');
 const latestAlbums = allAlbums
 	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
@@ -21,44 +19,66 @@ const latestAlbums = allAlbums
 
 <Layout title={title} description={description}>
 	<div class="home">
-		<!-- Hero Section -->
+
+		<!-- ══════════════════════════════════
+		     HERO — 奶油画布 + 分栏布局
+		     ══════════════════════════════════ -->
 		<section class="hero">
-			<div class="hero-container">
-				<div class="hero-badge">
-					<span class="badge-icon">✦</span>
-					<span>记录技术与生活</span>
+			<div class="hero-inner">
+
+				<!-- 左：文字区 -->
+				<div class="hero-text">
+					<div class="hero-eyebrow">
+						<span class="eyebrow-mark" aria-hidden="true">✦</span>
+						<span>记录技术与生活</span>
+					</div>
+					<h1 class="hero-title">
+						陶然无喜<br />亦无忧，<br />
+						<em>人生且自由。</em>
+					</h1>
+					<p class="hero-desc">
+						练习时长 7 年半的前端开发者，热爱摄影。
+						在这里分享开发经验、摄影作品与生活感悟。
+					</p>
+					<div class="hero-actions">
+						<a href="/posts" class="btn-primary">
+							浏览文章
+							<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+								<path d="M5 12h14M12 5l7 7-7 7"/>
+							</svg>
+						</a>
+						<a href="/gallery" class="btn-secondary">查看相册</a>
+					</div>
 				</div>
-				<h1 class="hero-title">
-					陶然无喜亦无忧🌕
-					<br />
-					<span class="gradient-text">人生且自由。</span>
-				</h1>
-				<p class="hero-desc">
-					练习时长 7 年半，分享一些前端开发经验、摄影作品以及生活感悟。
-				</p>
-				<div class="hero-actions">
-					<a href="/posts" class="btn btn-primary">
-						浏览文章
-						<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M5 12h14M12 5l7 7-7 7"/>
-						</svg>
-					</a>
-					<a href="/gallery" class="btn btn-secondary">查看相册</a>
+
+				<!-- 右：深色卡片 -->
+				<div class="hero-card" aria-hidden="true">
+					<div class="hero-card-eyebrow">LATEST NOTE</div>
+					<blockquote class="hero-card-quote">
+						"The best interface<br />is no interface."
+					</blockquote>
+					<div class="hero-card-footer">
+						<span class="hero-card-dot"></span>
+						<span>Front-end · Photography · Life</span>
+					</div>
 				</div>
+
 			</div>
 		</section>
 
-		<!-- Latest Posts Section -->
+		<!-- ══════════════════════════════════
+		     最新文章 — 奶油白背景
+		     ══════════════════════════════════ -->
 		<section class="section">
-			<div class="section-container">
-				<div class="section-header">
-					<div class="section-title-wrapper">
-						<span class="section-icon">📝</span>
-						<h2 class="section-title">最新文章</h2>
+			<div class="section-inner">
+				<div class="section-head">
+					<div class="section-label">
+						<span class="label-rule" aria-hidden="true"></span>
+						<h2 class="label-text">最新文章</h2>
 					</div>
-					<a href="/posts" class="section-link">
+					<a href="/posts" class="view-all">
 						查看全部
-						<svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
 							<path d="M5 12h14M12 5l7 7-7 7"/>
 						</svg>
 					</a>
@@ -71,547 +91,489 @@ const latestAlbums = allAlbums
 			</div>
 		</section>
 
-		<!-- Gallery Preview Section -->
-		<section class="section section-alt">
-			<div class="section-container">
-				<div class="section-header">
-					<div class="section-title-wrapper">
-						<span class="section-icon">📷</span>
-						<h2 class="section-title">摄影作品</h2>
+		<!-- ══════════════════════════════════
+		     摄影作品 — 柔奶油背景
+		     ══════════════════════════════════ -->
+		<section class="section section-soft">
+			<div class="section-inner">
+				<div class="section-head">
+					<div class="section-label">
+						<span class="label-rule" aria-hidden="true"></span>
+						<h2 class="label-text">摄影作品</h2>
 					</div>
-					<a href="/gallery" class="section-link">
+					<a href="/gallery" class="view-all">
 						查看全部
-						<svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
 							<path d="M5 12h14M12 5l7 7-7 7"/>
 						</svg>
 					</a>
 				</div>
 				<div class="gallery-grid">
 					{latestAlbums.map((album, index) => (
-						<a class={`gallery-item ${index === 0 ? 'gallery-item-large' : ''}`} href={`/gallery/${album.id}`}>
-							<div class="gallery-image">
+						<a
+							class={`gallery-item ${index === 0 ? 'gallery-item-large' : ''}`}
+							href={`/gallery/${album.id}`}
+						>
+							<div class="gallery-img-wrap">
 								<img
 									src={album.data.cover}
 									alt={album.data.coverAlt || album.data.title}
 									loading="lazy"
 									onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
 								/>
-								<div class="image-placeholder" style="display:none;">
-									<span class="placeholder-icon">◆</span>
+								<div class="gallery-placeholder" style="display:none;" aria-hidden="true">
+									<span>◆</span>
 								</div>
 								<div class="gallery-overlay">
-									<span class="gallery-meta">
-										<span class="gallery-category">{album.data.category}</span>
-										<span class="gallery-location">{album.data.location}</span>
-									</span>
+									<span class="gallery-badge">{album.data.category}</span>
+									<span class="gallery-location">{album.data.location}</span>
 								</div>
 							</div>
-							<h4 class="gallery-title">{album.data.title}</h4>
+							<p class="gallery-caption">{album.data.title}</p>
 						</a>
 					))}
 				</div>
 			</div>
 		</section>
 
-		<!-- About CTA Section -->
+		<!-- ══════════════════════════════════
+		     关于我 CTA — 珊瑚色全幅卡片
+		     ══════════════════════════════════ -->
 		<section class="section">
-			<div class="section-container">
-				<div class="cta-card">
-					<div class="cta-content">
-						<h2 class="cta-title">关于我</h2>
-						<p class="cta-desc">
+			<div class="section-inner">
+				<div class="cta-coral">
+					<div class="cta-coral-body">
+						<h2 class="cta-coral-title">关于我</h2>
+						<p class="cta-coral-desc">
 							热爱技术的开发者，喜欢用代码创造美好的事物。
-							同时也热爱摄影，用镜头记录生活中的精彩瞬间。
+							同时热爱摄影，用镜头记录生活中的精彩瞬间。
 						</p>
-						<a href="/about" class="btn btn-outline">
-							了解更多
-							<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M5 12h14M12 5l7 7-7 7"/>
-							</svg>
-						</a>
 					</div>
-					<div class="cta-decoration">
-						<div class="decoration-circle"></div>
-						<div class="decoration-circle decoration-circle-2"></div>
-					</div>
+					<a href="/about" class="cta-coral-btn">
+						了解更多
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
 				</div>
 			</div>
 		</section>
+
 	</div>
 </Layout>
 
 <style>
-	.home {
-		padding-bottom: 64px;
+/* ── Hero ── */
+.hero {
+	padding: 96px 24px 88px;
+	background: var(--c-canvas);
+}
+
+.hero-inner {
+	max-width: 1100px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 64px;
+	align-items: center;
+}
+
+.hero-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.6875rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: var(--c-muted);
+	margin-bottom: 28px;
+}
+
+.eyebrow-mark {
+	color: var(--c-primary);
+}
+
+.hero-title {
+	font-family: var(--font-display);
+	font-size: clamp(2.5rem, 4.5vw, 4rem);
+	font-weight: 400;
+	line-height: 1.08;
+	letter-spacing: -0.04em;
+	color: var(--c-ink);
+	margin-bottom: 24px;
+}
+
+.hero-title em {
+	font-style: italic;
+	color: var(--c-primary);
+}
+
+.hero-desc {
+	font-size: 1rem;
+	color: var(--c-body);
+	line-height: 1.75;
+	margin-bottom: 36px;
+	max-width: 420px;
+}
+
+.hero-actions {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.btn-primary {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 20px;
+	height: 40px;
+	background: var(--c-primary);
+	color: #fff;
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 500;
+	border-radius: 8px;
+	transition: background 0.2s;
+}
+
+.btn-primary:hover {
+	background: var(--c-primary-active);
+}
+
+.btn-secondary {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 20px;
+	height: 40px;
+	background: transparent;
+	color: var(--c-ink);
+	border: 1px solid var(--c-hairline);
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 500;
+	border-radius: 8px;
+	transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-secondary:hover {
+	background: var(--c-surface-card);
+	border-color: var(--c-surface-cream-strong);
+}
+
+/* ── Hero Card (Dark) ── */
+.hero-card {
+	background: var(--c-surface-dark);
+	border-radius: 16px;
+	padding: 40px;
+	color: var(--c-on-dark);
+}
+
+.hero-card-eyebrow {
+	font-size: 0.625rem;
+	font-weight: 500;
+	letter-spacing: 1.8px;
+	text-transform: uppercase;
+	color: var(--c-primary);
+	margin-bottom: 24px;
+}
+
+.hero-card-quote {
+	font-family: var(--font-display);
+	font-size: 1.5rem;
+	font-weight: 400;
+	font-style: italic;
+	line-height: 1.35;
+	letter-spacing: -0.02em;
+	color: var(--c-on-dark);
+	margin-bottom: 32px;
+}
+
+.hero-card-footer {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 0.8125rem;
+	color: var(--c-on-dark-soft);
+}
+
+.hero-card-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--c-teal);
+	flex-shrink: 0;
+}
+
+/* ── Sections ── */
+.section {
+	padding: 80px 24px;
+	background: var(--c-canvas);
+}
+
+.section-soft {
+	background: var(--c-surface-soft);
+}
+
+.section-inner {
+	max-width: 1100px;
+	margin: 0 auto;
+}
+
+.section-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 40px;
+}
+
+.section-label {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.label-rule {
+	display: block;
+	width: 24px;
+	height: 2px;
+	background: var(--c-primary);
+	flex-shrink: 0;
+}
+
+.label-text {
+	font-family: var(--font-display);
+	font-size: 1.625rem;
+	font-weight: 500;
+	letter-spacing: -0.025em;
+	color: var(--c-ink);
+}
+
+.view-all {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--c-primary);
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 500;
+	transition: gap 0.2s;
+}
+
+.view-all:hover {
+	gap: 10px;
+}
+
+/* ── Posts Grid ── */
+.posts-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+	gap: 20px;
+}
+
+/* ── Gallery ── */
+.gallery-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 16px;
+}
+
+.gallery-item {
+	text-decoration: none;
+	display: block;
+}
+
+.gallery-item-large {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+
+.gallery-img-wrap {
+	position: relative;
+	aspect-ratio: 1 / 1;
+	border-radius: 12px;
+	overflow: hidden;
+	background: var(--c-surface-card);
+}
+
+.gallery-item-large .gallery-img-wrap {
+	aspect-ratio: auto;
+	height: calc(100% - 38px);
+	min-height: 180px;
+}
+
+.gallery-img-wrap img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.4s ease;
+}
+
+.gallery-item:hover .gallery-img-wrap img {
+	transform: scale(1.05);
+}
+
+.gallery-placeholder {
+	position: absolute;
+	inset: 0;
+	background: var(--c-surface-card);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--c-primary);
+	font-size: 2rem;
+	opacity: 0.4;
+}
+
+.gallery-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(20,20,19,.72) 0%, transparent 55%);
+	opacity: 0;
+	transition: opacity 0.25s;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	padding: 12px 14px;
+}
+
+.gallery-item:hover .gallery-overlay {
+	opacity: 1;
+}
+
+.gallery-badge {
+	font-size: 0.625rem;
+	font-weight: 500;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: #fff;
+	background: var(--c-primary);
+	padding: 3px 8px;
+	border-radius: 4px;
+}
+
+.gallery-location {
+	font-size: 0.75rem;
+	color: rgba(255,255,255,.85);
+}
+
+.gallery-caption {
+	margin-top: 9px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--c-ink);
+	transition: color 0.2s;
+}
+
+.gallery-item:hover .gallery-caption {
+	color: var(--c-primary);
+}
+
+/* ── CTA Coral ── */
+.cta-coral {
+	background: var(--c-primary);
+	border-radius: 12px;
+	padding: 52px 64px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 32px;
+}
+
+.cta-coral-title {
+	font-family: var(--font-display);
+	font-size: 2.25rem;
+	font-weight: 400;
+	letter-spacing: -0.04em;
+	color: #fff;
+	margin-bottom: 12px;
+}
+
+.cta-coral-desc {
+	font-size: 1rem;
+	color: rgba(255,255,255,.8);
+	line-height: 1.7;
+	max-width: 480px;
+}
+
+.cta-coral-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 20px;
+	height: 40px;
+	background: var(--c-canvas);
+	color: var(--c-ink);
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 500;
+	border-radius: 8px;
+	white-space: nowrap;
+	flex-shrink: 0;
+	transition: background 0.2s;
+}
+
+.cta-coral-btn:hover {
+	background: var(--c-surface-card);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+	.hero-inner {
+		grid-template-columns: 1fr;
+		gap: 48px;
 	}
 
-	/* Hero Section */
-	.hero {
-		padding: 80px 24px 64px;
-		text-align: center;
-		background: linear-gradient(180deg, var(--vp-c-bg-alt) 0%, var(--vp-c-bg) 100%);
+	.hero-card {
+		display: none;
 	}
 
-	.hero-container {
-		max-width: 800px;
-		margin: 0 auto;
-	}
-
-	.hero-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 8px 16px;
-		background: var(--vp-c-brand-soft);
-		border-radius: 20px;
-		color: var(--vp-c-brand-1);
-		font-size: 0.875rem;
-		font-weight: 500;
-		margin-bottom: 24px;
-	}
-
-	.badge-icon {
-		font-size: 1rem;
-	}
-
-	.hero-title {
-		font-size: clamp(2rem, 5vw, 3.5rem);
-		font-weight: 700;
-		line-height: 1.2;
-		color: var(--vp-c-text-1);
-		margin-bottom: 24px;
-		letter-spacing: -0.02em;
-	}
-
-	.gradient-text {
-		background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-2) 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	.hero-desc {
-		font-size: 1.125rem;
-		color: var(--vp-c-text-2);
-		max-width: 600px;
-		margin: 0 auto 32px;
-		line-height: 1.7;
-	}
-
-	.hero-actions {
-		display: flex;
-		gap: 16px;
-		justify-content: center;
-		flex-wrap: wrap;
-	}
-
-	/* Buttons */
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 12px 24px;
-		border-radius: 8px;
-		font-size: 0.9375rem;
-		font-weight: 500;
-		text-decoration: none;
-		transition: all 0.2s;
-		cursor: pointer;
-		border: none;
-	}
-
-	.btn-primary {
-		background: var(--vp-c-brand-1);
-		color: white;
-	}
-
-	.btn-primary:hover {
-		background: var(--vp-c-brand-2);
-		transform: translateY(-1px);
-		box-shadow: var(--vp-shadow-2);
-	}
-
-	.btn-secondary {
-		background: var(--vp-c-bg-soft);
-		color: var(--vp-c-text-1);
-	}
-
-	.btn-secondary:hover {
-		background: var(--vp-c-bg-elv);
-	}
-
-	.btn-outline {
-		background: transparent;
-		color: var(--vp-c-brand-1);
-		border: 1px solid var(--vp-c-brand-1);
-	}
-
-	.btn-outline:hover {
-		background: var(--vp-c-brand-soft);
-	}
-
-	.btn-icon,
-	.link-icon,
-	.link-arrow {
-		width: 16px;
-		height: 16px;
-		transition: transform 0.2s;
-	}
-
-	.btn:hover .btn-icon,
-	.section-link:hover .link-icon,
-	.post-card-link:hover .link-arrow {
-		transform: translateX(4px);
-	}
-
-	/* Section */
-	.section {
-		padding: 64px 24px;
-	}
-
-	.section-alt {
-		background: var(--vp-c-bg-alt);
-	}
-
-	.section-container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.section-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 32px;
-	}
-
-	.section-title-wrapper {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.section-icon {
-		font-size: 1.5rem;
-	}
-
-	.section-title {
-		font-size: 1.5rem;
-		font-weight: 600;
-		color: var(--vp-c-text-1);
-	}
-
-	.section-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-		color: var(--vp-c-brand-1);
-		text-decoration: none;
-		font-size: 0.9375rem;
-		font-weight: 500;
-		transition: color 0.2s;
-	}
-
-	.section-link:hover {
-		color: var(--vp-c-brand-2);
-	}
-
-	/* Posts Grid */
-	.posts-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-		gap: 24px;
-	}
-
-	.post-card {
-		background: var(--vp-c-bg-elv);
-		border: 1px solid var(--vp-c-divider);
-		border-radius: 12px;
-		padding: 24px;
-		transition: all 0.2s;
-	}
-
-	.post-card:hover {
-		border-color: var(--vp-c-brand-1);
-		box-shadow: var(--vp-shadow-2);
-		transform: translateY(-2px);
-	}
-
-	.post-card-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 12px;
-	}
-
-	.post-category {
-		font-size: 0.75rem;
-		font-weight: 600;
-		color: var(--vp-c-brand-1);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.post-date {
-		font-size: 0.875rem;
-		color: var(--vp-c-text-3);
-	}
-
-	.post-card-title {
-		font-size: 1.125rem;
-		font-weight: 600;
-		margin-bottom: 12px;
-		line-height: 1.4;
-	}
-
-	.post-card-title a {
-		color: var(--vp-c-text-1);
-		text-decoration: none;
-		transition: color 0.2s;
-	}
-
-	.post-card-title a:hover {
-		color: var(--vp-c-brand-1);
-	}
-
-	.post-card-excerpt {
-		font-size: 0.9375rem;
-		color: var(--vp-c-text-2);
-		line-height: 1.6;
-		margin-bottom: 16px;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	.post-card-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-		color: var(--vp-c-brand-1);
-		text-decoration: none;
-		font-size: 0.875rem;
-		font-weight: 500;
-	}
-
-	/* Gallery Grid */
 	.gallery-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 20px;
-	}
-
-	.gallery-item {
-		position: relative;
-		text-decoration: none;
-		display: block;
+		grid-template-columns: repeat(2, 1fr);
 	}
 
 	.gallery-item-large {
-		grid-column: span 2;
-		grid-row: span 2;
+		grid-column: span 1;
+		grid-row: span 1;
+	}
+}
+
+@media (max-width: 768px) {
+	.hero {
+		padding: 64px 16px 56px;
 	}
 
-	.gallery-image {
-		position: relative;
-		aspect-ratio: 1;
-		border-radius: 12px;
-		overflow: hidden;
-		background: var(--vp-c-bg-elv);
+	.section {
+		padding: 64px 16px;
 	}
 
-	.gallery-item-large .gallery-image {
-		aspect-ratio: auto;
-		height: calc(100% - 40px);
-		min-height: 200px;
+	.posts-grid {
+		grid-template-columns: 1fr;
 	}
 
-	.gallery-image img {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		transition: transform 0.4s ease;
+	.gallery-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 10px;
 	}
 
-	.gallery-item:hover .gallery-image img {
-		transform: scale(1.05);
+	.section-head {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
 	}
 
-	.image-placeholder {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(135deg, var(--vp-c-brand-soft) 0%, var(--vp-c-bg-soft) 100%);
-		display: flex;
-		align-items: center;
-		justify-content: center;
+	.cta-coral {
+		padding: 36px 28px;
+		flex-direction: column;
+		text-align: center;
 	}
 
-	.placeholder-icon {
-		font-size: 3rem;
-		color: var(--vp-c-brand-1);
-		opacity: 0.5;
+	.cta-coral-desc {
+		max-width: 100%;
 	}
-
-	.gallery-overlay {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);
-		opacity: 0;
-		transition: opacity 0.25s;
-		display: flex;
-		align-items: flex-end;
-		padding: 14px 16px;
-	}
-
-	.gallery-item:hover .gallery-overlay {
-		opacity: 1;
-	}
-
-	.gallery-meta {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.gallery-category {
-		color: white;
-		font-size: 0.75rem;
-		font-weight: 600;
-		padding: 3px 9px;
-		background: var(--vp-c-brand-1);
-		border-radius: 4px;
-	}
-
-	.gallery-location {
-		color: rgba(255, 255, 255, 0.88);
-		font-size: 0.75rem;
-		font-weight: 500;
-	}
-
-	.gallery-title {
-		margin-top: 10px;
-		font-size: 0.9375rem;
-		font-weight: 500;
-		color: var(--vp-c-text-1);
-		transition: color 0.2s;
-	}
-
-	.gallery-item:hover .gallery-title {
-		color: var(--vp-c-brand-1);
-	}
-
-	/* CTA Card */
-	.cta-card {
-		position: relative;
-		background: var(--vp-c-bg-elv);
-		border: 1px solid var(--vp-c-divider);
-		border-radius: 16px;
-		padding: 48px;
-		overflow: hidden;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.cta-content {
-		max-width: 500px;
-		position: relative;
-		z-index: 1;
-	}
-
-	.cta-title {
-		font-size: 1.75rem;
-		font-weight: 600;
-		color: var(--vp-c-text-1);
-		margin-bottom: 12px;
-	}
-
-	.cta-desc {
-		font-size: 1rem;
-		color: var(--vp-c-text-2);
-		line-height: 1.7;
-		margin-bottom: 24px;
-	}
-
-	.cta-decoration {
-		position: relative;
-		width: 200px;
-		height: 200px;
-	}
-
-	.decoration-circle {
-		position: absolute;
-		width: 150px;
-		height: 150px;
-		border-radius: 50%;
-		background: var(--vp-c-brand-soft);
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
-
-	.decoration-circle-2 {
-		width: 100px;
-		height: 100px;
-		background: var(--vp-c-brand-1);
-		opacity: 0.2;
-		animation: pulse 3s ease-in-out infinite;
-	}
-
-	@keyframes pulse {
-		0%, 100% { transform: translate(-50%, -50%) scale(1); }
-		50% { transform: translate(-50%, -50%) scale(1.1); }
-	}
-
-	/* Responsive */
-	@media (max-width: 1024px) {
-		.gallery-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-
-		.gallery-item-large {
-			grid-column: span 1;
-			grid-row: span 1;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.hero {
-			padding: 64px 16px 48px;
-		}
-
-		.section {
-			padding: 48px 16px;
-		}
-
-		.posts-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.gallery-grid {
-			grid-template-columns: repeat(2, 1fr);
-			gap: 12px;
-		}
-
-		.cta-card {
-			padding: 32px;
-			flex-direction: column;
-			text-align: center;
-			gap: 32px;
-		}
-
-		.cta-decoration {
-			width: 150px;
-			height: 150px;
-		}
-
-		.section-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 12px;
-		}
-	}
+}
 </style>

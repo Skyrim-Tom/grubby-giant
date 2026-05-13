@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Hexagon } from 'lucide-vue-next';
-
 interface NavItem {
 	href: string;
 	text: string;
@@ -26,9 +24,7 @@ const normalizePath = (path: string): string => {
 const isActive = (item: NavItem): boolean => {
 	const currentPath = normalizePath(props.currentPath);
 	const href = normalizePath(item.href);
-	if (href === '/') {
-		return currentPath === '/';
-	}
+	if (href === '/') return currentPath === '/';
 	return currentPath === href || Boolean(item.matchPrefix && currentPath.startsWith(href + '/'));
 };
 </script>
@@ -36,16 +32,21 @@ const isActive = (item: NavItem): boolean => {
 <template>
 	<header class="header">
 		<div class="header-container">
-			<a href="/" class="logo">
-				<Hexagon class="logo-icon" :stroke-width="2.5" />
+			<!-- Logo: spike-mark + wordmark -->
+			<a href="/" class="logo" aria-label="Momoc's Blog — 首页">
+				<svg class="logo-mark" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+					<path d="M8 1V15M1 8H15M2.929 2.929L13.071 13.071M13.071 2.929L2.929 13.071"
+						stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+				</svg>
 				<span class="logo-text">Momoc's Blog</span>
 			</a>
-			
-			<nav class="nav">
-				<a 
-					v-for="item in navItems" 
+
+			<!-- Nav links -->
+			<nav class="nav" aria-label="主导航">
+				<a
+					v-for="item in navItems"
 					:key="item.href"
-					:href="item.href" 
+					:href="item.href"
 					:class="['nav-link', { active: isActive(item) }]"
 					:aria-current="isActive(item) ? 'page' : undefined"
 				>
@@ -53,6 +54,7 @@ const isActive = (item: NavItem): boolean => {
 				</a>
 			</nav>
 
+			<!-- Right actions slot -->
 			<div class="header-actions">
 				<slot name="actions"></slot>
 			</div>
@@ -68,13 +70,13 @@ const isActive = (item: NavItem): boolean => {
 	right: 0;
 	z-index: 100;
 	height: var(--header-height);
-	background-color: var(--vp-c-bg);
-	border-bottom: 1px solid var(--vp-c-divider);
+	background-color: var(--c-canvas);
+	border-bottom: 1px solid var(--c-hairline-soft);
 	transition: background-color 0.3s, border-color 0.3s;
 }
 
 .header-container {
-	max-width: 1440px;
+	max-width: 1200px;
 	margin: 0 auto;
 	padding: 0 24px;
 	height: 100%;
@@ -83,77 +85,86 @@ const isActive = (item: NavItem): boolean => {
 	justify-content: space-between;
 }
 
+/* ── Logo ── */
 .logo {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 	text-decoration: none;
-	color: var(--vp-c-text-1);
-	font-weight: 600;
-	font-size: 1.25rem;
+	color: var(--c-ink);
+}
+
+.logo-mark {
+	color: var(--c-primary);
+	flex-shrink: 0;
+	transition: transform 0.35s ease;
+}
+
+.logo:hover .logo-mark {
+	transform: rotate(45deg);
+}
+
+.logo-text {
+	font-family: var(--font-body);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	color: var(--c-ink);
+	letter-spacing: -0.01em;
 	transition: color 0.2s;
 }
 
-.logo:hover {
-	color: var(--vp-c-brand-1);
+.logo:hover .logo-text {
+	color: var(--c-primary);
 }
 
-.logo-icon {
-	color: var(--vp-c-brand-1);
-	width: 28px;
-	height: 28px;
-	transition: transform 0.3s ease;
-}
-
-.logo:hover .logo-icon {
-	transform: rotate(30deg);
-}
-
+/* ── Nav ── */
 .nav {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+}
+
+.nav-link {
+	padding: 6px 14px;
+	border-radius: 8px;
+	color: var(--c-muted);
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.4;
+	transition: color 0.2s, background-color 0.2s;
+}
+
+.nav-link:hover {
+	color: var(--c-ink);
+	background-color: var(--c-surface-card);
+}
+
+.nav-link.active {
+	color: var(--c-ink);
+	background-color: var(--c-surface-card);
+}
+
+/* ── Actions ── */
+.header-actions {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 }
 
-.nav-link {
-	padding: 0 16px;
-	line-height: 36px;
-	border-radius: 8px;
-	color: var(--vp-c-text-2);
-	text-decoration: none;
-	font-size: 0.9rem;
-	font-weight: 500;
-	transition: all 0.2s;
-}
-
-.nav-link:hover {
-	color: var(--vp-c-text-1);
-	background-color: var(--vp-c-bg-soft);
-}
-
-.nav-link.active {
-	color: var(--vp-c-brand-1);
-	background-color: var(--vp-c-brand-soft);
-}
-
-.header-actions {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-}
-
+/* ── Responsive ── */
 @media (max-width: 768px) {
 	.header-container {
 		padding: 0 16px;
 	}
 
 	.nav {
-		gap: 4px;
+		gap: 0;
 	}
 
 	.nav-link {
-		padding: 0 12px;
-		font-size: 0.85rem;
+		padding: 6px 10px;
+		font-size: 0.8125rem;
 	}
 
 	.logo-text {
