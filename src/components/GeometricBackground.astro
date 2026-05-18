@@ -1,8 +1,7 @@
 ---
-// Geometric canvas background — adapts to light / dark theme
+// Grid + floating-text background — inspired by Qclaw
 ---
 
-<!-- inline styles bypass Astro CSS scoping, safe with transition:persist -->
 <canvas
   id="geo-bg"
   aria-hidden="true"
@@ -12,145 +11,149 @@
 
 <script is:inline>
 (function () {
-
-  /* ── guard: don't double-init if script re-runs on navigation ── */
   if (window.__geoBgRunning) return;
   window.__geoBgRunning = true;
 
-  /* ─── palette ──────────────────────────────────────────────── */
+  /* ── phrases ──────────────────────────────────────────────── */
+  const PHRASES = [
+    'building beautiful interfaces',
+    'writing clean code',
+    'design meets function',
+    'crafting user experiences',
+    'pixel perfect layouts',
+    'ship it with care',
+    'attention to detail',
+    'elegant solutions',
+    'the art of simplicity',
+    'code is poetry',
+    'responsive by nature',
+    'through the lens',
+    'moments worth keeping',
+    'light and composition',
+    'life in focus',
+    'visual storytelling',
+    'frontend development',
+    'capturing the perfect shot',
+    'creative direction',
+    'form follows function',
+    'every pixel matters',
+    'stay curious',
+    'iterate and improve',
+    'beauty in the details',
+  ];
+
+  /* ── palette ──────────────────────────────────────────────── */
   const THEMES = {
     light: {
-      stroke:      'rgba(118, 70, 36, 0.9)',
-      lineAlpha:   0.32,
-      lineWidth:   0.70,
-      nodeColor:   'rgba(118, 70, 36, 0.42)',
-      nodeRadius:  1.4,
-      shadowBlur:  0,
-      shadowColor: 'transparent',
+      gridColor:  'rgba(148, 90, 48, 0.07)',
+      textColor:  'rgba(120, 72, 36, 1)',
+      textAlpha:  0.17,
+      gridGap:    60,
     },
     dark: {
-      stroke:      'rgba(212, 124, 90, 0.9)',
-      lineAlpha:   0.52,
-      lineWidth:   0.70,
-      nodeColor:   'rgba(212, 124, 90, 0.65)',
-      nodeRadius:  1.4,
-      shadowBlur:  5,
-      shadowColor: 'rgba(210, 110, 75, 0.30)',
+      gridColor:  'rgba(200, 125, 85, 0.08)',
+      textColor:  'rgba(205, 128, 88, 1)',
+      textAlpha:  0.22,
+      gridGap:    60,
     },
   };
 
-  /* ─── config ───────────────────────────────────────────────── */
-  const NODE_COUNT = 60;
-  const LINK_DIST  = 190;
-  const BOW_AMP    = 22;    /* max bezier bow in px               */
-  const BOW_SPEED  = 0.28;  /* bow oscillation speed              */
+  /* ── config ───────────────────────────────────────────────── */
+  const TEXT_COUNT  = 18;
+  const FONT_SIZE   = 11.5;
+  const FONT        = `${FONT_SIZE}px 'JetBrains Mono', ui-monospace, monospace`;
+  const FADE_ZONE   = 0.18;   /* fraction of H for fade in/out   */
 
-  /* ─── state ────────────────────────────────────────────────── */
+  /* ── state ────────────────────────────────────────────────── */
   const canvas = document.getElementById('geo-bg');
   const ctx    = canvas.getContext('2d');
-  let W = 0, H = 0;
-  let nodes    = [];
-  let raf      = null;
-  let palette  = THEMES.light;
+  let W = 0, H = 0, raf = null;
+  let palette = THEMES.light;
+  let particles = [];
 
-  /* ─── theme ────────────────────────────────────────────────── */
+  /* ── theme ────────────────────────────────────────────────── */
   function syncPalette () {
     palette = document.documentElement.getAttribute('data-theme') === 'dark'
       ? THEMES.dark : THEMES.light;
   }
 
-  /* ─── Node ─────────────────────────────────────────────────── */
-  class Node {
-    constructor () {
-      this.x     = Math.random() * W;
-      this.y     = Math.random() * H;
-      this.angle = Math.random() * Math.PI * 2;
-      this.angVel = (Math.random() - 0.5) * 0.005;
-      this.speed  = 0.08 + Math.random() * 0.14;
-      this.phase  = Math.random() * Math.PI * 2;
+  /* ── TextParticle ─────────────────────────────────────────── */
+  class TextParticle {
+    constructor (initial) {
+      this.init(initial);
     }
-    update (t) {
-      this.angle += this.angVel;
-      const s = this.speed * (1 + 0.15 * Math.sin(t * 0.55 + this.phase));
-      this.x += Math.cos(this.angle) * s;
-      this.y += Math.sin(this.angle) * s;
-      const P = 32;
-      if (this.x < -P) this.x = W + P;
-      else if (this.x > W + P) this.x = -P;
-      if (this.y < -P) this.y = H + P;
-      else if (this.y > H + P) this.y = -P;
+    init (initial) {
+      this.text  = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+      this.x     = Math.random() * (W + 200) - 100;
+      this.y     = initial ? Math.random() * H : H + FONT_SIZE * 2;
+      this.speed = 0.25 + Math.random() * 0.35;
+    }
+    update () {
+      this.y -= this.speed;
+      if (this.y < -FONT_SIZE * 2) this.init(false);
+    }
+    alpha () {
+      const fadeIn  = H * FADE_ZONE;
+      const fadeOut = H * FADE_ZONE;
+      if (this.y > H - fadeIn)  return Math.max(0, 1 - (this.y - (H - fadeIn))  / fadeIn);
+      if (this.y < fadeOut)     return Math.max(0, this.y / fadeOut);
+      return 1;
     }
   }
 
-  /* ─── resize ───────────────────────────────────────────────── */
+  /* ── resize ───────────────────────────────────────────────── */
   function resize () {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
-    nodes = Array.from({ length: NODE_COUNT }, () => new Node());
+    particles = Array.from({ length: TEXT_COUNT }, (_, i) => new TextParticle(true));
   }
 
-  /* ─── draw ─────────────────────────────────────────────────── */
-  function draw (ts) {
-    const t   = (ts || 0) * 0.001;
-    const LD2 = LINK_DIST * LINK_DIST;
-
-    ctx.clearRect(0, 0, W, H);
-    for (const n of nodes) n.update(t);
-
-    /* ── lines ── */
-    ctx.strokeStyle = palette.stroke;
-    ctx.lineWidth   = palette.lineWidth;
-    ctx.lineCap     = 'round';
-    ctx.shadowColor = palette.shadowColor;
-    ctx.shadowBlur  = palette.shadowBlur;
-
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const dx = nodes[j].x - nodes[i].x;
-        const dy = nodes[j].y - nodes[i].y;
-        const d2 = dx * dx + dy * dy;
-        if (d2 >= LD2) continue;
-
-        const dist = Math.sqrt(d2);
-        const tn   = dist / LINK_DIST;           /* 0=close  1=edge */
-
-        /* quadratic falloff — visible through mid-range */
-        ctx.globalAlpha = (1 - tn) * (1 - tn) * palette.lineAlpha;
-
-        /* bezier control point: perpendicular bow, per-pair phase */
-        const mx = (nodes[i].x + nodes[j].x) * 0.5;
-        const my = (nodes[i].y + nodes[j].y) * 0.5;
-        const nx = -dy / dist;
-        const ny =  dx / dist;
-        const ph = (i * 7.391 + j * 13.718) % (Math.PI * 2);
-        const bw = Math.sin(t * BOW_SPEED + ph) * BOW_AMP * (1 - tn * 0.5);
-
-        ctx.beginPath();
-        ctx.moveTo(nodes[i].x, nodes[i].y);
-        ctx.quadraticCurveTo(mx + nx * bw, my + ny * bw, nodes[j].x, nodes[j].y);
-        ctx.stroke();
-      }
-    }
-
-    /* ── nodes ── */
-    ctx.shadowBlur  = 0;
-    ctx.fillStyle   = palette.nodeColor;
+  /* ── draw grid ────────────────────────────────────────────── */
+  function drawGrid () {
+    const g = palette.gridGap;
+    ctx.strokeStyle = palette.gridColor;
+    ctx.lineWidth   = 1;
     ctx.globalAlpha = 1;
-    for (const n of nodes) {
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, palette.nodeRadius, 0, Math.PI * 2);
-      ctx.fill();
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += g) {
+      ctx.moveTo(x + 0.5, 0);
+      ctx.lineTo(x + 0.5, H);
+    }
+    for (let y = 0; y <= H; y += g) {
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+    }
+    ctx.stroke();
+  }
+
+  /* ── draw loop ────────────────────────────────────────────── */
+  function draw () {
+    ctx.clearRect(0, 0, W, H);
+
+    drawGrid();
+
+    ctx.font      = FONT;
+    ctx.fillStyle = palette.textColor;
+    ctx.textBaseline = 'top';
+
+    for (const p of particles) {
+      p.update();
+      const a = p.alpha() * palette.textAlpha;
+      if (a < 0.003) continue;
+      ctx.globalAlpha = a;
+      ctx.fillText(p.text, p.x, p.y);
     }
 
+    ctx.globalAlpha = 1;
     raf = requestAnimationFrame(draw);
   }
 
-  /* ─── theme observer ───────────────────────────────────────── */
+  /* ── theme observer ───────────────────────────────────────── */
   new MutationObserver(syncPalette).observe(document.documentElement, {
     attributes: true, attributeFilter: ['data-theme'],
   });
 
-  /* ─── Astro view-transitions ───────────────────────────────── */
+  /* ── Astro view-transitions ───────────────────────────────── */
   document.addEventListener('astro:before-swap', () => {
     if (raf) { cancelAnimationFrame(raf); raf = null; }
   });
@@ -159,11 +162,10 @@
     if (!raf) raf = requestAnimationFrame(draw);
   });
 
-  /* ─── boot ─────────────────────────────────────────────────── */
+  /* ── boot ─────────────────────────────────────────────────── */
   syncPalette();
   resize();
   window.addEventListener('resize', resize);
   raf = requestAnimationFrame(draw);
-
 })();
 </script>
