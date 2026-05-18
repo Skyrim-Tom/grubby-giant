@@ -45,13 +45,13 @@
   /* ── palette ──────────────────────────────────────────────── */
   const THEMES = {
     light: {
-      gridColor:  'rgba(148, 90, 48, 0.07)',
+      gridColor:  'rgba(148, 90, 48, 0.045)',
       textColor:  'rgba(120, 72, 36, 1)',
       textAlpha:  0.17,
       gridGap:    60,
     },
     dark: {
-      gridColor:  'rgba(200, 125, 85, 0.08)',
+      gridColor:  'rgba(200, 125, 85, 0.055)',
       textColor:  'rgba(205, 128, 88, 1)',
       textAlpha:  0.22,
       gridGap:    60,
@@ -70,6 +70,7 @@
   let W = 0, H = 0, raf = null;
   let palette = THEMES.light;
   let particles = [];
+  let lastW = 0, resizeTimer = null;
 
   /* ── theme ────────────────────────────────────────────────── */
   function syncPalette () {
@@ -102,10 +103,23 @@
   }
 
   /* ── resize ───────────────────────────────────────────────── */
+  function applyResize () {
+    const newW = window.innerWidth;
+    const newH = window.innerHeight;
+    canvas.width  = W = newW;
+    canvas.height = H = newH;
+    /* 只在宽度发生明显变化（横竖屏切换 / 真实窗口缩放）时重建粒子，
+       移动端上下滑动仅触发高度变化（地址栏显隐），跳过重建避免粒子爆炸 */
+    if (!particles.length || Math.abs(newW - lastW) > 30) {
+      lastW = newW;
+      particles = Array.from({ length: TEXT_COUNT }, () => new TextParticle(true));
+    }
+  }
+
   function resize () {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    particles = Array.from({ length: TEXT_COUNT }, (_, i) => new TextParticle(true));
+    /* 防抖：100ms 内只执行一次，消除移动端高频 resize 事件 */
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(applyResize, 100);
   }
 
   /* ── draw grid ────────────────────────────────────────────── */
@@ -164,7 +178,7 @@
 
   /* ── boot ─────────────────────────────────────────────────── */
   syncPalette();
-  resize();
+  applyResize();                          /* 首次直接执行，无需防抖 */
   window.addEventListener('resize', resize);
   raf = requestAnimationFrame(draw);
 })();
