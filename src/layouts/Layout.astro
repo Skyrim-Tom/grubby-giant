@@ -1,6 +1,7 @@
 ---
 import NavBar from '../components/NavBar.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import BackToTop from '../components/BackToTop.vue';
 import GeometricBackground from '../components/GeometricBackground.astro';
 import { ClientRouter } from 'astro:transitions';
 
@@ -52,6 +53,8 @@ const currentPath = Astro.url.pathname;
 			<main class="main">
 				<slot />
 			</main>
+
+			<BackToTop client:load transition:persist="back-to-top" />
 
 			<!-- Footer — 深海军蓝 -->
 			<footer class="footer">
