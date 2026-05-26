@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import DocSearchBox from './DocSearchBox.vue';
+
 interface NavItem {
 	href: string;
 	text: string;
@@ -32,14 +34,17 @@ const isActive = (item: NavItem): boolean => {
 <template>
 	<header class="header">
 		<div class="header-container">
-			<!-- Logo: spike-mark + wordmark -->
-			<a href="/" class="logo" aria-label="Momoc's Blog — 首页">
-				<svg class="logo-mark" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-					<path d="M8 1V15M1 8H15M2.929 2.929L13.071 13.071M13.071 2.929L2.929 13.071"
-						stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-				</svg>
-				<span class="logo-text">Momoc's Blog</span>
-			</a>
+			<div class="brand-search">
+				<!-- Logo: spike-mark + wordmark -->
+				<a href="/" class="logo" aria-label="Momoc's Blog — 首页">
+					<svg class="logo-mark" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+						<path d="M8 1V15M1 8H15M2.929 2.929L13.071 13.071M13.071 2.929L2.929 13.071"
+							stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+					</svg>
+					<span class="logo-text">Momoc's Blog</span>
+				</a>
+				<DocSearchBox />
+			</div>
 
 			<!-- Nav links -->
 			<nav class="nav" aria-label="主导航">
@@ -86,6 +91,13 @@ const isActive = (item: NavItem): boolean => {
 }
 
 /* ── Logo ── */
+.brand-search {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	min-width: 0;
+}
+
 .logo {
 	display: flex;
 	align-items: center;
@@ -156,6 +168,10 @@ const isActive = (item: NavItem): boolean => {
 @media (max-width: 768px) {
 	.header-container {
 		padding: 0 16px;
+	}
+
+	.brand-search {
+		gap: 10px;
 	}
 
 	.nav {
