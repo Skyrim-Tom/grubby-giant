@@ -37,7 +37,7 @@ const socialLinks = [
 const stats = [
 	{ value: "7年+", label: "开发经验" },
 	{ value: "20+",  label: "技术文章" },
-	{ value: "100+", label: "摄影作品" },
+	{ value: "30+", label: "摄影作品" },
 ];
 ---
 
@@ -83,17 +83,27 @@ const stats = [
 
 			<!-- 右：深色 Profile 卡片 -->
 			<div class="profile-card" aria-label="个人信息卡片">
-				<div class="profile-avatar">
-					<img
-						src="https://image.momoc.cn/common/avatar.png"
-						alt="Momoc 的头像"
-						width="80"
-						height="80"
-					/>
+				<div class="profile-window-bar" aria-hidden="true">
+					<div class="profile-dots">
+						<span class="dot dot-red"></span>
+						<span class="dot dot-yellow"></span>
+						<span class="dot dot-green"></span>
+					</div>
+					<span>profile.card</span>
 				</div>
-				<div class="profile-identity">
-					<strong class="profile-name">Momoc</strong>
-					<span class="profile-subtitle">Front-end Developer</span>
+				<div class="profile-main">
+					<div class="profile-avatar">
+						<img
+							src="https://image.momoc.cn/common/avatar.png"
+							alt="Momoc 的头像"
+							width="80"
+							height="80"
+						/>
+					</div>
+					<div class="profile-identity">
+						<strong class="profile-name">Momoc</strong>
+						<span class="profile-subtitle">前端开发者 / 摄影爱好者</span>
+					</div>
 				</div>
 				<div class="profile-divider" aria-hidden="true"></div>
 				<div class="stats-row">
@@ -106,7 +116,7 @@ const stats = [
 				</div>
 				<div class="profile-status">
 					<span class="status-dot" aria-hidden="true"></span>
-					<span>Located in China</span>
+					<span>持续记录技术、影像与生活</span>
 				</div>
 			</div>
 
@@ -127,34 +137,6 @@ const stats = [
 				{skills.map(skill => (
 					<span class="skill-pill" role="listitem">{skill}</span>
 				))}
-			</div>
-		</div>
-	</section>
-
-	<!-- ════════════════════════════════════════
-	     CODE CARD — 奶油背景 + 深色终端风
-	     ════════════════════════════════════════ -->
-	<section class="code-section">
-		<div class="code-inner">
-			<div class="code-card" aria-label="开发者信息代码示例">
-				<!-- 窗口标题栏 -->
-				<div class="code-header">
-					<div class="code-dots" aria-hidden="true">
-						<span class="dot dot-red"></span>
-						<span class="dot dot-yellow"></span>
-						<span class="dot dot-green"></span>
-					</div>
-					<span class="code-filename">developer.ts</span>
-				</div>
-				<!-- 代码体 -->
-				<pre class="code-body"><code><span class="t-kw">const</span> <span class="t-var">developer</span> <span class="t-op">=</span> &#123;
-  <span class="t-key">name</span><span class="t-punc">:</span>       <span class="t-str">"Momoc"</span><span class="t-punc">,</span>
-  <span class="t-key">role</span><span class="t-punc">:</span>       <span class="t-str">"Frontend Developer"</span><span class="t-punc">,</span>
-  <span class="t-key">location</span><span class="t-punc">:</span>   <span class="t-str">"China 🇨🇳"</span><span class="t-punc">,</span>
-  <span class="t-key">passion</span><span class="t-punc">:</span>    <span class="t-bracket">[</span><span class="t-str">"Web Dev"</span><span class="t-punc">,</span> <span class="t-str">"Photography"</span><span class="t-bracket">]</span><span class="t-punc">,</span>
-  <span class="t-key">blog</span><span class="t-punc">:</span>       <span class="t-str">"www.momoc.cn"</span><span class="t-punc">,</span>
-  <span class="t-key">available</span><span class="t-punc">:</span>  <span class="t-bool">true</span><span class="t-punc">,</span>
-&#125;</code></pre>
 			</div>
 		</div>
 	</section>
@@ -304,13 +286,39 @@ const stats = [
 /* ── Profile Card (Dark) ── */
 .profile-card {
 	background: var(--c-surface-dark);
-	border-radius: 16px;
-	padding: 32px;
+	border: 1px solid rgba(250,249,245,0.08);
+	border-radius: 12px;
+	padding: 0;
 	width: 264px;
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
 	flex-shrink: 0;
+	overflow: hidden;
+	box-shadow: 0 22px 60px rgba(20, 20, 19, 0.12);
+}
+
+.profile-window-bar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 13px 16px;
+	background: var(--c-surface-dark-elevated);
+	border-bottom: 1px solid rgba(250,249,245,0.06);
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	color: var(--c-on-dark-soft);
+}
+
+.profile-dots {
+	display: flex;
+	gap: 6px;
+}
+
+.profile-main {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	padding: 26px 28px 0;
 }
 
 .profile-avatar {
@@ -348,6 +356,7 @@ const stats = [
 .profile-divider {
 	height: 1px;
 	background: rgba(250,249,245,0.08);
+	margin: 20px 28px 0;
 }
 
 /* ── Stats Row ── */
@@ -355,6 +364,8 @@ const stats = [
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	gap: 4px;
+	padding: 0 22px;
+	margin-top: 20px;
 }
 
 .stat {
@@ -376,8 +387,7 @@ const stats = [
 .stat-label {
 	font-size: 0.625rem;
 	font-weight: 500;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
+	letter-spacing: 0;
 	color: var(--c-on-dark-soft);
 	text-align: center;
 }
@@ -386,6 +396,7 @@ const stats = [
 	display: flex;
 	align-items: center;
 	gap: 8px;
+	padding: 18px 28px 26px;
 	font-size: 0.8125rem;
 	color: var(--c-on-dark-soft);
 }
@@ -441,36 +452,6 @@ const stats = [
 	background: var(--c-surface-cream-strong);
 }
 
-/* ── Code Section ── */
-.code-section {
-	padding: 80px 24px;
-}
-
-.code-inner {
-	max-width: 680px;
-	margin: 0 auto;
-}
-
-.code-card {
-	background: var(--c-surface-dark);
-	border-radius: 12px;
-	overflow: hidden;
-}
-
-.code-header {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	padding: 13px 20px;
-	background: var(--c-surface-dark-elevated);
-	border-bottom: 1px solid rgba(250,249,245,0.06);
-}
-
-.code-dots {
-	display: flex;
-	gap: 6px;
-}
-
 .dot {
 	width: 10px;
 	height: 10px;
@@ -480,30 +461,6 @@ const stats = [
 .dot-red    { background: #c64545; }
 .dot-yellow { background: #d4a017; }
 .dot-green  { background: #5db872; }
-
-.code-filename {
-	font-family: var(--font-mono);
-	font-size: 0.8125rem;
-	color: var(--c-on-dark-soft);
-}
-
-.code-body {
-	padding: 28px 32px;
-	font-family: var(--font-mono);
-	font-size: 0.9375rem;
-	line-height: 1.8;
-	overflow-x: auto;
-}
-
-/* Syntax tokens */
-.t-kw     { color: #cc785c; }   /* coral — keyword */
-.t-var    { color: #faf9f5; }   /* on-dark — identifier */
-.t-op     { color: #6c6a64; }   /* muted — operator */
-.t-key    { color: #5db8a6; }   /* teal — object key */
-.t-str    { color: #a09d96; }   /* on-dark-soft — string */
-.t-bool   { color: #e8a55a; }   /* amber — boolean */
-.t-punc   { color: #504e49; }   /* muted-soft — punctuation */
-.t-bracket{ color: #faf9f5; }   /* on-dark — brackets */
 
 /* ── Contact Section ── */
 .contact-section {
@@ -661,7 +618,16 @@ const stats = [
 		flex-direction: row;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: 24px;
+	}
+
+	.profile-window-bar {
+		width: 100%;
+	}
+
+	.profile-main {
+		flex-direction: row;
+		align-items: center;
+		padding: 0 0 0 28px;
 	}
 
 	.profile-divider {
@@ -671,6 +637,12 @@ const stats = [
 	.stats-row {
 		flex: 1;
 		min-width: 200px;
+		margin-top: 0;
+		padding: 0;
+	}
+
+	.profile-status {
+		padding: 0 28px 0 0;
 	}
 
 	.contact-card {
@@ -694,14 +666,8 @@ const stats = [
 	}
 
 	.skills-section,
-	.code-section,
 	.contact-section {
 		padding: 64px 16px;
-	}
-
-	.code-body {
-		padding: 20px 20px;
-		font-size: 0.875rem;
 	}
 
 	.contact-card {
@@ -714,6 +680,22 @@ const stats = [
 
 	.profile-card {
 		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.profile-main {
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 26px 28px 0;
+	}
+
+	.stats-row {
+		padding: 0 22px;
+		margin-top: 20px;
+	}
+
+	.profile-status {
+		padding: 18px 28px 26px;
 	}
 }
 </style>
