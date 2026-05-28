@@ -24,16 +24,6 @@ const latestAlbums = allAlbums
 		if (bIndex === -1) return -1;
 		return aIndex - bIndex;
 	});
-
-const homeGalleryCovers: Record<string, string> = {
-	'rainbow-after-rain': '/images/gallery-home/rainbow-after-rain.jpg',
-	'mount-siguniang': '/images/gallery-home/mount-siguniang.jpg',
-	'citywalk-in-macau': '/images/gallery-home/citywalk-in-macau.jpg',
-	'qi-ao-island-sunset': '/images/gallery-home/qi-ao-island-sunset.jpg',
-};
-
-const getHomeGalleryCover = (album: typeof latestAlbums[number]) =>
-	homeGalleryCovers[album.id] ?? album.data.cover;
 ---
 
 <Layout title={title} description={description}>
@@ -163,7 +153,7 @@ const getHomeGalleryCover = (album: typeof latestAlbums[number]) =>
 						>
 							<div class="gallery-img-wrap">
 								<img
-									src={getHomeGalleryCover(album)}
+									src={album.data.cover}
 									alt={album.data.coverAlt || album.data.title}
 									loading="lazy"
 									decoding="async"
