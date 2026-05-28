@@ -187,24 +187,32 @@ const latestAlbums = allAlbums
 		</section>
 
 		<!-- ══════════════════════════════════
-		     关于我 CTA — 珊瑚色全幅卡片
+		     关于我 CTA
 		     ══════════════════════════════════ -->
 		<section class="section">
 			<div class="section-inner">
 				<div class="cta-coral">
 					<div class="cta-coral-body">
+						<span class="cta-coral-kicker">About / Journal</span>
 						<h2 class="cta-coral-title">关于我</h2>
 						<p class="cta-coral-desc">
 							热爱技术的开发者，喜欢用代码创造美好的事物。
 							同时热爱摄影，用镜头记录生活中的精彩瞬间。
 						</p>
 					</div>
-					<a href="/about" class="cta-coral-btn">
-						了解更多
-						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-							<path d="M5 12h14M12 5l7 7-7 7"/>
-						</svg>
-					</a>
+					<div class="cta-coral-aside">
+						<div class="cta-coral-note">
+							<span>Frontend</span>
+							<span>Photography</span>
+							<span>Life Notes</span>
+						</div>
+						<a href="/about" class="cta-coral-btn">
+							了解更多
+							<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+								<path d="M5 12h14M12 5l7 7-7 7"/>
+							</svg>
+						</a>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -720,15 +728,41 @@ const latestAlbums = allAlbums
 	stroke: #181715;
 }
 
-/* ── CTA Coral ── */
+/* ── About CTA ── */
 .cta-coral {
-	background: var(--c-primary);
-	border-radius: 12px;
-	padding: 52px 64px;
-	display: flex;
+	position: relative;
+	overflow: hidden;
+	background:
+		linear-gradient(135deg, color-mix(in srgb, var(--c-canvas) 92%, var(--c-primary)), var(--c-surface-soft));
+	border: 1px solid var(--c-hairline);
+	border-radius: 8px;
+	padding: 44px 48px;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
 	justify-content: space-between;
 	align-items: center;
-	gap: 32px;
+	gap: 48px;
+	box-shadow: 0 20px 60px rgba(20, 20, 19, 0.06);
+}
+
+.cta-coral::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	background: var(--c-primary);
+}
+
+.cta-coral-kicker {
+	display: inline-flex;
+	margin-bottom: 14px;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 1.5px;
+	text-transform: uppercase;
+	color: var(--c-primary);
 }
 
 .cta-coral-title {
@@ -736,15 +770,39 @@ const latestAlbums = allAlbums
 	font-size: 2.25rem;
 	font-weight: 400;
 	letter-spacing: -0.04em;
-	color: #fff;
+	color: var(--c-ink);
 	margin-bottom: 12px;
 }
 
 .cta-coral-desc {
 	font-size: 1rem;
-	color: rgba(255,255,255,.8);
+	color: var(--c-body);
 	line-height: 1.7;
 	max-width: 480px;
+}
+
+.cta-coral-aside {
+	display: grid;
+	gap: 20px;
+	justify-items: end;
+}
+
+.cta-coral-note {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 8px;
+	max-width: 310px;
+}
+
+.cta-coral-note span {
+	padding: 7px 10px;
+	border: 1px solid var(--c-hairline);
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--c-canvas) 72%, transparent);
+	color: var(--c-muted);
+	font-size: 0.75rem;
+	line-height: 1;
 }
 
 .cta-coral-btn {
@@ -753,19 +811,20 @@ const latestAlbums = allAlbums
 	gap: 8px;
 	padding: 0 20px;
 	height: 40px;
-	background: var(--c-canvas);
-	color: var(--c-ink);
+	background: var(--c-ink);
+	color: var(--c-canvas);
 	text-decoration: none;
 	font-size: 0.875rem;
 	font-weight: 500;
 	border-radius: 8px;
 	white-space: nowrap;
 	flex-shrink: 0;
-	transition: background 0.2s;
+	transition: background 0.2s, transform 0.2s;
 }
 
 .cta-coral-btn:hover {
-	background: var(--c-surface-card);
+	background: var(--c-primary);
+	transform: translateY(-1px);
 }
 
 /* ── Responsive ── */
@@ -831,8 +890,17 @@ const latestAlbums = allAlbums
 
 	.cta-coral {
 		padding: 36px 28px;
-		flex-direction: column;
-		text-align: center;
+		grid-template-columns: 1fr;
+		gap: 28px;
+		text-align: left;
+	}
+
+	.cta-coral-aside {
+		justify-items: start;
+	}
+
+	.cta-coral-note {
+		justify-content: flex-start;
 	}
 
 	.cta-coral-desc {

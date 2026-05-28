@@ -160,17 +160,22 @@ const stats = [
 	</section>
 
 	<!-- ════════════════════════════════════════
-	     CONTACT CTA — 珊瑚色全幅卡片
+	     Contact
 	     ════════════════════════════════════════ -->
 	<section class="contact-section">
 		<div class="contact-inner">
 			<div class="contact-card">
 
 				<div class="contact-left">
+					<span class="contact-kicker">Contact</span>
 					<h2 class="contact-title">想要合作或联系我？</h2>
 					<p class="contact-desc">
 						欢迎通过以下方式找到我，随时期待交流与合作。
 					</p>
+					<div class="contact-status">
+						<span class="contact-status-dot" aria-hidden="true"></span>
+						<span>通常会在空闲时间回复</span>
+					</div>
 				</div>
 
 				<div class="contact-links" role="list" aria-label="联系方式列表">
@@ -503,7 +508,8 @@ const stats = [
 /* ── Contact Section ── */
 .contact-section {
 	padding: 80px 24px;
-	background: var(--c-surface-soft);
+	background:
+		linear-gradient(to bottom, transparent, color-mix(in srgb, var(--c-surface-soft) 64%, transparent));
 }
 
 .contact-inner {
@@ -512,13 +518,36 @@ const stats = [
 }
 
 .contact-card {
-	background: var(--c-primary);
-	border-radius: 12px;
-	padding: 56px 64px;
-	display: flex;
+	position: relative;
+	overflow: hidden;
+	background: color-mix(in srgb, var(--c-canvas) 82%, var(--c-surface-soft));
+	border: 1px solid var(--c-hairline);
+	border-radius: 8px;
+	padding: 48px;
+	display: grid;
+	grid-template-columns: minmax(0, 0.85fr) minmax(320px, 0.9fr);
 	justify-content: space-between;
 	align-items: flex-start;
-	gap: 48px;
+	gap: 56px;
+	box-shadow: 0 24px 70px rgba(20, 20, 19, 0.06);
+}
+
+.contact-card::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 1px;
+	background: linear-gradient(90deg, var(--c-primary), transparent 48%);
+}
+
+.contact-kicker {
+	display: inline-flex;
+	margin-bottom: 18px;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 1.6px;
+	text-transform: uppercase;
+	color: var(--c-primary);
 }
 
 .contact-title {
@@ -526,44 +555,69 @@ const stats = [
 	font-size: 2.25rem;
 	font-weight: 400;
 	letter-spacing: -0.04em;
-	color: #fff;
+	color: var(--c-ink);
 	margin-bottom: 12px;
 }
 
 .contact-desc {
 	font-size: 1rem;
-	color: rgba(255,255,255,.8);
+	color: var(--c-body);
 	line-height: 1.7;
 	max-width: 340px;
 }
 
+.contact-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	margin-top: 28px;
+	padding: 8px 12px;
+	border: 1px solid var(--c-hairline);
+	border-radius: 999px;
+	color: var(--c-muted);
+	font-size: 0.8125rem;
+	background: color-mix(in srgb, var(--c-canvas) 76%, transparent);
+}
+
+.contact-status-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--c-teal);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-teal) 18%, transparent);
+}
+
 .contact-links {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	flex-shrink: 0;
-	min-width: 296px;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1px;
+	width: 100%;
+	border: 1px solid var(--c-hairline);
+	border-radius: 8px;
+	background: var(--c-hairline);
+	overflow: hidden;
 }
 
 .contact-link {
 	display: flex;
 	align-items: center;
 	gap: 14px;
-	padding: 14px 18px;
-	background: rgba(255,255,255,.12);
-	border-radius: 10px;
-	color: #fff;
+	min-height: 66px;
+	padding: 16px 18px;
+	background: color-mix(in srgb, var(--c-canvas) 88%, var(--c-surface-soft));
+	color: var(--c-ink);
 	text-decoration: none;
-	transition: background 0.2s;
+	transition: background 0.2s, color 0.2s;
 }
 
 .contact-link:hover {
-	background: rgba(255,255,255,.2);
+	background: var(--c-canvas);
+	color: var(--c-primary);
 }
 
 .contact-link > svg:first-child {
 	flex-shrink: 0;
-	opacity: 0.9;
+	color: var(--c-primary);
 }
 
 .contact-link-info {
@@ -576,11 +630,12 @@ const stats = [
 .contact-link-name {
 	font-size: 0.9375rem;
 	font-weight: 500;
+	color: var(--c-ink);
 }
 
 .contact-link-handle {
 	font-size: 0.75rem;
-	opacity: 0.72;
+	color: var(--c-muted);
 }
 
 .contact-arrow {
@@ -619,12 +674,13 @@ const stats = [
 	}
 
 	.contact-card {
-		flex-direction: column;
 		padding: 48px;
+		grid-template-columns: 1fr;
+		gap: 36px;
 	}
 
 	.contact-links {
-		min-width: 100%;
+		width: 100%;
 	}
 }
 
