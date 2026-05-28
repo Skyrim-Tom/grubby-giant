@@ -1,0 +1,532 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const title = '404 · 页面走丢了';
+const description = '这个页面可能已经移动、删除，或暂时不在 Momoc 的博客里。';
+
+const allPosts = await getCollection('posts');
+const latestPosts = allPosts
+	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+	.slice(0, 3);
+
+const allAlbums = await getCollection('gallery');
+const featuredAlbum = allAlbums
+	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())[0];
+---
+
+<Layout title={title} description={description}>
+	<section class="not-found" aria-labelledby="not-found-title">
+		<div class="not-found-inner">
+			<div class="not-found-copy">
+				<div class="page-eyebrow">
+					<span class="eyebrow-mark" aria-hidden="true">✦</span>
+					<span>ERROR / 404</span>
+				</div>
+
+				<p class="error-code" aria-hidden="true">404</p>
+				<h1 id="not-found-title" class="not-found-title">这条路径暂时没有回应</h1>
+				<p class="not-found-desc">
+					可能是链接写错了，也可能是内容已经搬家。你可以回到首页，
+					或者从最近的文章继续阅读。
+				</p>
+
+				<div class="not-found-actions">
+					<a href="/" class="btn-primary">
+						返回首页
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+					<a href="/posts" class="btn-secondary">浏览文章</a>
+				</div>
+			</div>
+
+			<aside class="route-panel" aria-label="缺失页面状态">
+				<div class="panel-header">
+					<div class="panel-dots" aria-hidden="true">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<span class="panel-path">/unknown-route</span>
+				</div>
+				<div class="panel-body">
+					<div class="route-line">
+						<span class="route-label">status</span>
+						<span class="route-value">not found</span>
+					</div>
+					<div class="route-line">
+						<span class="route-label">fallback</span>
+						<span class="route-value route-value-ok">src/pages/404.astro</span>
+					</div>
+					<div class="route-line">
+						<span class="route-label">next</span>
+						<span class="route-value">keep exploring</span>
+					</div>
+				</div>
+				{featuredAlbum && (
+					<a href={`/gallery/${featuredAlbum.id}`} class="photo-strip" aria-label={`查看相册：${featuredAlbum.data.title}`}>
+						<img
+							src={featuredAlbum.data.cover}
+							alt={featuredAlbum.data.coverAlt || featuredAlbum.data.title}
+							loading="lazy"
+						/>
+						<span class="photo-caption">
+							<span>{featuredAlbum.data.title}</span>
+							<small>{featuredAlbum.data.location}</small>
+						</span>
+					</a>
+				)}
+			</aside>
+		</div>
+	</section>
+
+	<section class="reading-section" aria-labelledby="reading-title">
+		<div class="reading-inner">
+			<div class="section-head">
+				<div class="section-label">
+					<span class="label-rule" aria-hidden="true"></span>
+					<h2 id="reading-title" class="label-text">最近发布</h2>
+				</div>
+				<a href="/posts" class="view-all">
+					查看全部
+					<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+						<path d="M5 12h14M12 5l7 7-7 7"/>
+					</svg>
+				</a>
+			</div>
+
+			<div class="article-list">
+				{latestPosts.map((post, index) => (
+					<a href={`/posts/${post.id}`} class="article-link">
+						<span class="article-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+						<span class="article-main">
+							<span class="article-meta">{post.data.category} · {post.data.readTime}阅读</span>
+							<span class="article-title">{post.data.title}</span>
+						</span>
+						<svg class="article-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+							<path d="M7 7h10v10M7 17L17 7"/>
+						</svg>
+					</a>
+				))}
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+.not-found {
+	min-height: calc(100vh - var(--header-height));
+	padding: 96px 24px 72px;
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid var(--c-hairline-soft);
+}
+
+.not-found-inner {
+	width: 100%;
+	max-width: 1100px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 380px;
+	gap: 72px;
+	align-items: center;
+}
+
+.page-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.6875rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: var(--c-muted);
+	margin-bottom: 20px;
+}
+
+.eyebrow-mark {
+	color: var(--c-primary);
+}
+
+.error-code {
+	font-family: var(--font-display);
+	font-size: clamp(5rem, 16vw, 10rem);
+	font-weight: 400;
+	line-height: 0.82;
+	color: var(--c-primary);
+	margin-bottom: 28px;
+}
+
+.not-found-title {
+	font-family: var(--font-display);
+	font-size: clamp(2.25rem, 5vw, 4rem);
+	font-weight: 400;
+	line-height: 1.08;
+	letter-spacing: 0;
+	color: var(--c-ink);
+	margin-bottom: 20px;
+}
+
+.not-found-desc {
+	max-width: 520px;
+	font-size: 1rem;
+	line-height: 1.8;
+	color: var(--c-body);
+	margin-bottom: 36px;
+}
+
+.not-found-actions {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 40px;
+	padding: 0 20px;
+	border-radius: 8px;
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 500;
+	transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.btn-primary {
+	background: var(--c-primary);
+	color: #fff;
+}
+
+.btn-primary:hover {
+	background: var(--c-primary-active);
+	transform: translateY(-1px);
+}
+
+.btn-secondary {
+	background: transparent;
+	color: var(--c-ink);
+	border: 1px solid var(--c-hairline);
+}
+
+.btn-secondary:hover {
+	background: var(--c-surface-card);
+	border-color: var(--c-surface-cream-strong);
+	transform: translateY(-1px);
+}
+
+.route-panel {
+	background: var(--c-surface-dark);
+	border-radius: 16px;
+	overflow: hidden;
+	color: var(--c-on-dark);
+	box-shadow: 0 24px 70px rgba(20, 20, 19, 0.16);
+}
+
+.panel-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 18px;
+	background: var(--c-surface-dark-elevated);
+	border-bottom: 1px solid rgba(250, 249, 245, 0.06);
+}
+
+.panel-dots {
+	display: flex;
+	gap: 6px;
+}
+
+.panel-dots span {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: var(--c-muted-soft);
+}
+
+.panel-dots span:nth-child(1) {
+	background: var(--c-error);
+}
+
+.panel-dots span:nth-child(2) {
+	background: var(--c-amber);
+}
+
+.panel-dots span:nth-child(3) {
+	background: var(--c-teal);
+}
+
+.panel-path {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	color: var(--c-on-dark-soft);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.panel-body {
+	padding: 24px 22px;
+	display: grid;
+	gap: 14px;
+}
+
+.route-line {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 18px;
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+}
+
+.route-label {
+	color: var(--c-muted);
+}
+
+.route-value {
+	color: var(--c-on-dark);
+	text-align: right;
+}
+
+.route-value-ok {
+	color: var(--c-teal);
+}
+
+.photo-strip {
+	position: relative;
+	display: block;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	text-decoration: none;
+	color: #fff;
+}
+
+.photo-strip img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.45s ease;
+}
+
+.photo-strip::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(20, 20, 19, 0.78), rgba(20, 20, 19, 0.05) 64%);
+}
+
+.photo-strip:hover img {
+	transform: scale(1.04);
+}
+
+.photo-caption {
+	position: absolute;
+	left: 20px;
+	right: 20px;
+	bottom: 18px;
+	z-index: 1;
+	display: flex;
+	justify-content: space-between;
+	align-items: end;
+	gap: 12px;
+	font-size: 0.9375rem;
+	font-weight: 500;
+}
+
+.photo-caption small {
+	font-size: 0.75rem;
+	font-weight: 400;
+	color: rgba(255, 255, 255, 0.72);
+	white-space: nowrap;
+}
+
+.reading-section {
+	padding: 72px 24px 88px;
+	background: var(--c-surface-soft);
+}
+
+.reading-inner {
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.section-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 24px;
+	margin-bottom: 28px;
+}
+
+.section-label {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.label-rule {
+	display: block;
+	width: 24px;
+	height: 2px;
+	background: var(--c-primary);
+	flex-shrink: 0;
+}
+
+.label-text {
+	font-family: var(--font-display);
+	font-size: 1.625rem;
+	font-weight: 500;
+	letter-spacing: 0;
+	color: var(--c-ink);
+}
+
+.view-all {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--c-primary);
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 500;
+	transition: gap 0.2s;
+	white-space: nowrap;
+}
+
+.view-all:hover {
+	gap: 10px;
+}
+
+.article-list {
+	display: grid;
+	gap: 1px;
+	border-top: 1px solid var(--c-hairline-soft);
+	border-bottom: 1px solid var(--c-hairline-soft);
+}
+
+.article-link {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	gap: 18px;
+	align-items: center;
+	padding: 22px 0;
+	color: var(--c-ink);
+	text-decoration: none;
+	border-bottom: 1px solid var(--c-hairline-soft);
+	transition: color 0.2s;
+}
+
+.article-link:last-child {
+	border-bottom: none;
+}
+
+.article-link:hover {
+	color: var(--c-primary);
+}
+
+.article-number {
+	font-family: var(--font-display);
+	font-size: 1rem;
+	color: var(--c-muted);
+	opacity: 0.55;
+}
+
+.article-main {
+	display: grid;
+	gap: 5px;
+	min-width: 0;
+}
+
+.article-meta {
+	font-size: 0.75rem;
+	color: var(--c-muted);
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.article-title {
+	font-family: var(--font-display);
+	font-size: 1.375rem;
+	font-weight: 500;
+	line-height: 1.25;
+	letter-spacing: 0;
+	overflow-wrap: anywhere;
+}
+
+.article-arrow {
+	color: var(--c-muted);
+	transition: transform 0.2s, color 0.2s;
+}
+
+.article-link:hover .article-arrow {
+	color: var(--c-primary);
+	transform: translate(2px, -2px);
+}
+
+@media (max-width: 960px) {
+	.not-found {
+		padding: 72px 24px 64px;
+	}
+
+	.not-found-inner {
+		grid-template-columns: 1fr;
+		gap: 48px;
+	}
+
+	.route-panel {
+		max-width: 520px;
+	}
+}
+
+@media (max-width: 768px) {
+	.not-found {
+		padding: 64px 16px 56px;
+		align-items: flex-start;
+	}
+
+	.not-found-desc {
+		margin-bottom: 28px;
+	}
+
+	.route-line {
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.route-value {
+		text-align: left;
+		overflow-wrap: anywhere;
+	}
+
+	.photo-caption {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.reading-section {
+		padding: 56px 16px 72px;
+	}
+
+	.section-head {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 14px;
+	}
+
+	.article-link {
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 14px;
+	}
+
+	.article-number {
+		display: none;
+	}
+}
+</style>
