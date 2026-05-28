@@ -12,9 +12,28 @@ const latestPosts = allPosts
 	.slice(0, 3);
 
 const allAlbums = await getCollection('gallery');
+const featuredAlbumIds = ['mount-siguniang'];
 const latestAlbums = allAlbums
 	.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
-	.slice(0, 4);
+	.slice(0, 4)
+	.sort((a, b) => {
+		const aIndex = featuredAlbumIds.indexOf(a.id);
+		const bIndex = featuredAlbumIds.indexOf(b.id);
+		if (aIndex === -1 && bIndex === -1) return 0;
+		if (aIndex === -1) return 1;
+		if (bIndex === -1) return -1;
+		return aIndex - bIndex;
+	});
+
+const homeGalleryCovers: Record<string, string> = {
+	'rainbow-after-rain': '/images/gallery-home/rainbow-after-rain.jpg',
+	'mount-siguniang': '/images/gallery-home/mount-siguniang.jpg',
+	'citywalk-in-macau': '/images/gallery-home/citywalk-in-macau.jpg',
+	'qi-ao-island-sunset': '/images/gallery-home/qi-ao-island-sunset.jpg',
+};
+
+const getHomeGalleryCover = (album: typeof latestAlbums[number]) =>
+	homeGalleryCovers[album.id] ?? album.data.cover;
 ---
 
 <Layout title={title} description={description}>
@@ -34,7 +53,7 @@ const latestAlbums = allAlbums
 					</div>
 					<h1 class="hero-title">
 						陶然无喜<br />亦无忧，<br />
-						<em>人生且自由。</em>
+						<em class="hero-title-accent">人生且自由。</em>
 					</h1>
 					<p class="hero-desc">
 						练习时长 7 年半的前端开发者，热爱摄影。
@@ -135,28 +154,42 @@ const latestAlbums = allAlbums
 						</svg>
 					</a>
 				</div>
-				<div class="gallery-grid">
+				<div class="gallery-showcase">
 					{latestAlbums.map((album, index) => (
 						<a
-							class={`gallery-item ${index === 0 ? 'gallery-item-large' : ''}`}
+							class={`gallery-item ${index === 0 ? 'gallery-item-featured' : ''}`}
 							href={`/gallery/${album.id}`}
+							aria-label={`查看相册：${album.data.title}`}
 						>
 							<div class="gallery-img-wrap">
 								<img
-									src={album.data.cover}
+									src={getHomeGalleryCover(album)}
 									alt={album.data.coverAlt || album.data.title}
 									loading="lazy"
+									decoding="async"
+									width="1200"
+									height="900"
 									onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
 								/>
 								<div class="gallery-placeholder" style="display:none;" aria-hidden="true">
 									<span>◆</span>
 								</div>
+								<div class="gallery-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
 								<div class="gallery-overlay">
-									<span class="gallery-badge">{album.data.category}</span>
-									<span class="gallery-location">{album.data.location}</span>
+									<div class="gallery-meta-row">
+										<span class="gallery-badge">{album.data.category}</span>
+										<span class="gallery-location">{album.data.location}</span>
+									</div>
+									<div class="gallery-title-row">
+										<h3 class="gallery-title">{album.data.title}</h3>
+										<span class="gallery-arrow" aria-hidden="true">
+											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+												<path d="M7 7h10v10M7 17L17 7"/>
+											</svg>
+										</span>
+									</div>
 								</div>
 							</div>
-							<p class="gallery-caption">{album.data.title}</p>
 						</a>
 					))}
 				</div>
@@ -233,6 +266,45 @@ const latestAlbums = allAlbums
 .hero-title em {
 	font-style: italic;
 	color: var(--c-primary);
+}
+
+.hero-title-accent {
+	position: relative;
+	display: inline-block;
+	font-style: normal;
+	letter-spacing: 0;
+}
+
+.hero-title-accent::after {
+	content: "";
+	position: absolute;
+	left: 0.04em;
+	right: 0.02em;
+	bottom: 0.04em;
+	height: 0.16em;
+	background: color-mix(in srgb, var(--c-primary) 24%, transparent);
+	border-radius: 999px;
+	z-index: -1;
+	transform-origin: left center;
+	animation: accent-rule-in 0.8s ease-out 0.35s both;
+}
+
+@keyframes accent-rule-in {
+	from {
+		opacity: 0;
+		transform: scaleX(0.18);
+	}
+
+	to {
+		opacity: 1;
+		transform: scaleX(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hero-title-accent::after {
+		animation: none;
+	}
 }
 
 .hero-desc {
@@ -505,35 +577,38 @@ const latestAlbums = allAlbums
 	gap: 20px;
 }
 
-/* ── Gallery ── */
-.gallery-grid {
+/* ── Gallery Showcase ── */
+.gallery-showcase {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 16px;
+	grid-template-columns: minmax(0, 1.28fr) minmax(320px, 0.72fr);
+	grid-template-rows: repeat(3, 164px);
+	gap: 14px;
+	content-visibility: auto;
+	contain-intrinsic-size: 680px;
 }
 
 .gallery-item {
-	text-decoration: none;
 	display: block;
+	min-width: 0;
+	text-decoration: none;
+	contain: layout paint style;
 }
 
-.gallery-item-large {
-	grid-column: span 2;
-	grid-row: span 2;
+.gallery-item-featured {
+	grid-row: span 3;
 }
 
 .gallery-img-wrap {
 	position: relative;
-	aspect-ratio: 1 / 1;
-	border-radius: 12px;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	border-radius: 8px;
 	overflow: hidden;
 	background: var(--c-surface-card);
-}
-
-.gallery-item-large .gallery-img-wrap {
-	aspect-ratio: auto;
-	height: calc(100% - 38px);
-	min-height: 180px;
+	isolation: isolate;
+	box-shadow: 0 1px 0 rgba(20, 20, 19, 0.05);
+	transform: translateZ(0);
 }
 
 .gallery-img-wrap img {
@@ -542,11 +617,14 @@ const latestAlbums = allAlbums
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	transition: transform 0.4s ease;
+	backface-visibility: hidden;
+	transform: scale(1.001);
+	transition: transform 0.6s ease;
+	will-change: transform;
 }
 
 .gallery-item:hover .gallery-img-wrap img {
-	transform: scale(1.05);
+	transform: scale(1.025);
 }
 
 .gallery-placeholder {
@@ -561,48 +639,95 @@ const latestAlbums = allAlbums
 	opacity: 0.4;
 }
 
+.gallery-number {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	z-index: 2;
+	font-family: var(--font-display);
+	font-size: 1rem;
+	line-height: 1;
+	color: rgba(255, 255, 255, 0.72);
+	text-shadow: 0 1px 14px rgba(0, 0, 0, 0.28);
+}
+
 .gallery-overlay {
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(to top, rgba(20,20,19,.72) 0%, transparent 55%);
-	opacity: 0;
-	transition: opacity 0.25s;
+	z-index: 1;
 	display: flex;
-	align-items: flex-end;
-	justify-content: space-between;
-	padding: 12px 14px;
+	flex-direction: column;
+	justify-content: flex-end;
+	gap: 12px;
+	padding: 22px;
+	background:
+		linear-gradient(to top, rgba(20, 20, 19, 0.76) 0%, rgba(20, 20, 19, 0.22) 48%, rgba(20, 20, 19, 0.02) 100%);
+	color: #fff;
 }
 
-.gallery-item:hover .gallery-overlay {
-	opacity: 1;
+.gallery-meta-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
 }
 
 .gallery-badge {
 	font-size: 0.625rem;
-	font-weight: 500;
-	letter-spacing: 1px;
+	font-weight: 600;
+	letter-spacing: 1.4px;
 	text-transform: uppercase;
-	color: #fff;
-	background: var(--c-primary);
-	padding: 3px 8px;
-	border-radius: 4px;
+	color: rgba(255, 255, 255, 0.9);
 }
 
 .gallery-location {
 	font-size: 0.75rem;
-	color: rgba(255,255,255,.85);
+	color: rgba(255, 255, 255, 0.72);
+	white-space: nowrap;
 }
 
-.gallery-caption {
-	margin-top: 9px;
-	font-size: 0.875rem;
+.gallery-title-row {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 18px;
+}
+
+.gallery-title {
+	font-family: var(--font-display);
+	font-size: 1.5rem;
 	font-weight: 500;
-	color: var(--c-ink);
-	transition: color 0.2s;
+	line-height: 1.12;
+	letter-spacing: 0;
+	color: #fff;
 }
 
-.gallery-item:hover .gallery-caption {
-	color: var(--c-primary);
+.gallery-item:not(.gallery-item-featured) .gallery-title {
+	font-size: 1.125rem;
+}
+
+.gallery-arrow {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border: 1px solid rgba(255, 255, 255, 0.28);
+	border-radius: 50%;
+	color: rgba(255, 255, 255, 0.86);
+	flex-shrink: 0;
+	transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.gallery-item:hover .gallery-arrow {
+	background: #fff;
+	border-color: #fff;
+	color: #181715;
+	transform: translate(2px, -2px);
+}
+
+.gallery-item:hover .gallery-arrow svg {
+	stroke: #181715;
 }
 
 /* ── CTA Coral ── */
@@ -664,13 +789,15 @@ const latestAlbums = allAlbums
 		display: none;
 	}
 
-	.gallery-grid {
-		grid-template-columns: repeat(2, 1fr);
+	.gallery-showcase {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-rows: none;
 	}
 
-	.gallery-item-large {
-		grid-column: span 1;
-		grid-row: span 1;
+	.gallery-item,
+	.gallery-item-featured {
+		grid-row: auto;
+		aspect-ratio: 4 / 3;
 	}
 }
 
@@ -687,9 +814,23 @@ const latestAlbums = allAlbums
 		grid-template-columns: 1fr;
 	}
 
-	.gallery-grid {
-		grid-template-columns: repeat(2, 1fr);
-		gap: 10px;
+	.gallery-showcase {
+		grid-template-columns: 1fr;
+		gap: 12px;
+		contain-intrinsic-size: 920px;
+	}
+
+	.gallery-item,
+	.gallery-item-featured {
+		aspect-ratio: 4 / 3;
+	}
+
+	.gallery-overlay {
+		padding: 18px;
+	}
+
+	.gallery-title {
+		font-size: 1.25rem;
 	}
 
 	.section-head {

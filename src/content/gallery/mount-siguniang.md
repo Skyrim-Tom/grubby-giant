@@ -4,7 +4,7 @@ description: "海拔四千米以上的高原草甸、冰峰与雪山，是那种
 pubDate: 2026-05-05
 category: "风景"
 location: "四川·四姑娘山"
-cover: "https://image.momoc.cn/photos/mount-siguniang/DSC02614.jpg"
+cover: "https://image.momoc.cn/photos/mount-siguniang/DSC03998.jpg"
 coverAlt: "四姑娘山雪峰"
 tags: ["四姑娘山", "川西", "雪山"]
 ---

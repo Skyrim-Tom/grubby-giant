@@ -4,7 +4,7 @@ description: "漫步澳门老城，葡式建筑与南洋风情交织，每一条
 pubDate: 2026-04-20
 category: "城市"
 location: "澳门"
-cover: "https://image.momoc.cn/photos/citywalk-in-macau/DSC00239.jpg"
+cover: "https://image.momoc.cn/photos/citywalk-in-macau/DSC00520.jpg"
 coverAlt: "澳门街头建筑"
 tags: ["澳门", "CityWalk", "人文"]
 ---

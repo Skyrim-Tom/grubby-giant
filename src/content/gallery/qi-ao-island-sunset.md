@@ -4,7 +4,7 @@ description: "珠海淇澳岛的傍晚，海面被烧成了橙红色，这是这
 pubDate: 2026-04-05
 category: "风景"
 location: "珠海·淇澳岛"
-cover: "https://image.momoc.cn/photos/qi-ao-island-sunset/DSC04160.jpg"
+cover: "https://image.momoc.cn/photos/qi-ao-island-sunset/DSC04207.jpg"
 coverAlt: "淇澳岛日落海景"
 tags: ["日落", "淇澳岛", "珠海"]
 ---
