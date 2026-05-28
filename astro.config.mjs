@@ -11,6 +11,12 @@ export default defineConfig({
   build: {
     format: 'directory'
   },
+  vite: {
+    build: {
+      // DocSearch is lazy-loaded on the client and sits just over Vite's 500 KB default.
+      chunkSizeWarningLimit: 600,
+    },
+  },
   markdown: {
     shikiConfig: {
       // 双主题配置 - 支持浅色/深色切换

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import docsearch from '@docsearch/js';
 import '@docsearch/css';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 const searchContainer = ref<HTMLElement | null>(null);
-let searchInstance: ReturnType<typeof docsearch> | undefined;
+let searchInstance: { destroy: () => void } | undefined;
 
-onMounted(() => {
+onMounted(async () => {
 	if (!searchContainer.value) return;
+
+	const { default: docsearch } = await import('@docsearch/js');
 
 	searchInstance = docsearch({
 		container: searchContainer.value,

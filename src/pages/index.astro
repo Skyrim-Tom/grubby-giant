@@ -51,17 +51,44 @@ const latestAlbums = allAlbums
 					</div>
 				</div>
 
-				<!-- 右：深色卡片 -->
-				<div class="hero-card" aria-hidden="true">
-					<div class="hero-card-eyebrow">LATEST NOTE</div>
-					<blockquote class="hero-card-quote">
-						"The best interface<br />is no interface."
-					</blockquote>
-					<div class="hero-card-footer">
-						<span class="hero-card-dot"></span>
-						<span>Front-end · Photography · Life</span>
+				<!-- 右：站点状态卡片 -->
+				<aside class="hero-card" aria-label="站点状态">
+					<div class="hero-card-header">
+						<div class="hero-card-dots" aria-hidden="true">
+							<span></span>
+							<span></span>
+							<span></span>
+						</div>
+						<span class="hero-card-path">momoc.blog / home</span>
 					</div>
-				</div>
+					<div class="hero-card-body">
+						<div class="hero-card-eyebrow">CURRENTLY</div>
+						<p class="hero-card-title">总有一些美好的事情值得记录。</p>
+						<div class="hero-card-lines">
+							<div class="hero-card-line">
+								<span class="hero-card-label">articles</span>
+								<span class="hero-card-value">{allPosts.length} 篇</span>
+							</div>
+							<div class="hero-card-line">
+								<span class="hero-card-label">albums</span>
+								<span class="hero-card-value">{allAlbums.length} 组</span>
+							</div>
+							<div class="hero-card-line">
+								<span class="hero-card-label">focus</span>
+								<span class="hero-card-value hero-card-value-ok">持续探索</span>
+							</div>
+						</div>
+					</div>
+					<a href="/posts" class="hero-card-strip">
+						<span>
+							<strong>最新文章</strong>
+							<small>{latestPosts[0]?.data.title}</small>
+						</span>
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+							<path d="M7 7h10v10M7 17L17 7"/>
+						</svg>
+					</a>
+				</aside>
 
 			</div>
 		</section>
@@ -262,12 +289,60 @@ const latestAlbums = allAlbums
 	border-color: var(--c-surface-cream-strong);
 }
 
-/* ── Hero Card (Dark) ── */
+/* ── Hero Card (Status Panel) ── */
 .hero-card {
 	background: var(--c-surface-dark);
 	border-radius: 16px;
-	padding: 40px;
+	overflow: hidden;
 	color: var(--c-on-dark);
+	box-shadow: 0 24px 70px rgba(20, 20, 19, 0.14);
+}
+
+.hero-card-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 18px;
+	background: var(--c-surface-dark-elevated);
+	border-bottom: 1px solid rgba(250, 249, 245, 0.06);
+}
+
+.hero-card-dots {
+	display: flex;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+.hero-card-dots span {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: var(--c-muted-soft);
+}
+
+.hero-card-dots span:nth-child(1) {
+	background: var(--c-error);
+}
+
+.hero-card-dots span:nth-child(2) {
+	background: var(--c-amber);
+}
+
+.hero-card-dots span:nth-child(3) {
+	background: var(--c-teal);
+}
+
+.hero-card-path {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	color: var(--c-on-dark-soft);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.hero-card-body {
+	padding: 32px 32px 28px;
 }
 
 .hero-card-eyebrow {
@@ -276,34 +351,93 @@ const latestAlbums = allAlbums
 	letter-spacing: 1.8px;
 	text-transform: uppercase;
 	color: var(--c-primary);
-	margin-bottom: 24px;
+	margin-bottom: 18px;
 }
 
-.hero-card-quote {
+.hero-card-title {
 	font-family: var(--font-display);
-	font-size: 1.5rem;
+	font-size: 1.625rem;
 	font-weight: 400;
-	font-style: italic;
 	line-height: 1.35;
-	letter-spacing: -0.02em;
+	letter-spacing: 0;
 	color: var(--c-on-dark);
-	margin-bottom: 32px;
+	margin-bottom: 28px;
 }
 
-.hero-card-footer {
+.hero-card-lines {
+	display: grid;
+	gap: 13px;
+}
+
+.hero-card-line {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 18px;
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+}
+
+.hero-card-label {
+	color: var(--c-muted);
+}
+
+.hero-card-value {
+	color: var(--c-on-dark);
+	text-align: right;
+}
+
+.hero-card-value-ok {
+	color: var(--c-teal);
+}
+
+.hero-card-strip {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	font-size: 0.8125rem;
-	color: var(--c-on-dark-soft);
+	justify-content: space-between;
+	gap: 18px;
+	padding: 18px 22px;
+	background: rgba(250, 249, 245, 0.05);
+	border-top: 1px solid rgba(250, 249, 245, 0.06);
+	color: var(--c-on-dark);
+	text-decoration: none;
+	transition: background 0.2s;
 }
 
-.hero-card-dot {
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background: var(--c-teal);
+.hero-card-strip:hover {
+	background: rgba(250, 249, 245, 0.09);
+}
+
+.hero-card-strip span {
+	display: grid;
+	gap: 4px;
+	min-width: 0;
+}
+
+.hero-card-strip strong {
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: var(--c-primary);
+}
+
+.hero-card-strip small {
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: var(--c-on-dark-soft);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.hero-card-strip svg {
 	flex-shrink: 0;
+	color: var(--c-on-dark-soft);
+	transition: transform 0.2s, color 0.2s;
+}
+
+.hero-card-strip:hover svg {
+	color: var(--c-primary);
+	transform: translate(2px, -2px);
 }
 
 /* ── Sections ── */
